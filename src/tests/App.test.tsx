@@ -4,6 +4,10 @@ import userEvent from '@testing-library/user-event';
 import App from '../App';
 import renderWithRouterAndContext from '../utils/render';
 
+const pageTitleEl = 'page-title';
+const profileTopButtonEl = 'profile-top-btn';
+const searchTopButtonEl = 'search-top-btn';
+
 describe('Testa a Tela de login', () => {
   test('Verifica se a página de login é renderizada', () => {
     renderWithRouterAndContext(<App />);
@@ -62,5 +66,67 @@ describe('Testa a Tela de login', () => {
 
     await userEvent.click(entryBtn);
     expect(emailText).not.toBeInTheDocument();
+  });
+
+  test('Verifica se o header está sendo renderizado corretamente.', async () => {
+    const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
+
+    const pageTitle = screen.getByTestId(pageTitleEl);
+    const profileBtn = screen.getByTestId(profileTopButtonEl);
+    const searchBtn = screen.getByTestId(searchTopButtonEl);
+
+    expect(pageTitle).toBeInTheDocument();
+    expect(profileBtn).toBeInTheDocument();
+    expect(searchBtn).toBeInTheDocument();
+
+    await user.click(searchBtn);
+
+    const searchInput = screen.getByTestId('search-input');
+    expect(searchInput).toBeInTheDocument();
+  });
+
+  test('Verifica rota de Drinks', async () => {
+    renderWithRouterAndContext(<App />, { route: '/drinks' });
+
+    const pageTitle = screen.getByTestId(pageTitleEl);
+    const profileBtn = screen.getByTestId(profileTopButtonEl);
+    const searchBtn = screen.getByTestId(searchTopButtonEl);
+
+    expect(pageTitle).toBeInTheDocument();
+    expect(profileBtn).toBeInTheDocument();
+    expect(searchBtn).toBeInTheDocument();
+  });
+
+  test('Verifica rota profile', async () => {
+    renderWithRouterAndContext(<App />, { route: '/profile' });
+
+    const pageTitle = screen.getByTestId(pageTitleEl);
+    const profileBtn = screen.getByTestId(profileTopButtonEl);
+
+    expect(pageTitle).toBeInTheDocument();
+    expect(profileBtn).toBeInTheDocument();
+    // expect(screen.getByTestId('searchTopButtonEl')).not.toBeInTheDocument();
+  });
+
+  test('Verifica rota Done Recipes', async () => {
+    renderWithRouterAndContext(<App />, { route: '/done-recipes' });
+
+    const pageTitle = screen.getByTestId(pageTitleEl);
+    const profileBtn = screen.getByTestId(profileTopButtonEl);
+
+    expect(pageTitle).toBeInTheDocument();
+    expect(profileBtn).toBeInTheDocument();
+    // expect(screen.getByTestId('searchTopButtonEl')).not.toBeInTheDocument();
+  });
+
+  test('Verifica rota Favorites Recipes', async () => {
+    renderWithRouterAndContext(<App />, { route: '/favorite-recipes' });
+
+    const pageTitle = screen.getByTestId(pageTitleEl);
+    const profileBtn = screen.getByTestId(profileTopButtonEl);
+
+    expect(pageTitle).toBeInTheDocument();
+    expect(profileBtn).toBeInTheDocument();
+    // expect(screen.getByTestId('searchTopButtonEl')).not.toBeInTheDocument();
   });
 });
