@@ -5,6 +5,7 @@ import Drinks from './Pages/Drinks';
 import Profile from './Pages/Profile';
 import DoneRecipes from './Pages/DoneRecipes';
 import FavoriteRecipes from './Pages/FavoriteRecipes';
+import RecipeDetails from './components/RecipeDetails';
 
 function App() {
   return (
@@ -12,7 +13,8 @@ function App() {
       <Route path="/" element={ <Login /> } />
       <Route path="/meals" element={ <Meals /> } />
       <Route path="/drinks" element={ <Drinks /> } />
-      <Route path="/meals/:recipeID" element={ <Meals /> } />
+      <Route path="/meals/:recipeID" element={ <RecipeDetails mealOrDrink="meal" /> } />
+      <Route path="/drinks/:recipeID" element={ <RecipeDetails mealOrDrink="drink" /> } />
       <Route path="/profile" element={ <Profile /> } />
       <Route path="/done-recipes" element={ <DoneRecipes /> } />
       <Route path="/favorite-recipes" element={ <FavoriteRecipes /> } />

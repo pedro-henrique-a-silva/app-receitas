@@ -1,0 +1,31 @@
+.recipeThumb {
+  width: 200px;
+}
+
+.recipeCoverWrapper {
+  color: rgba(255, 255, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.recipeCoverWrapper img {
+  position: absolute;
+  width: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.recipeTitle {
+  font-size: 1.2rem;
+}
+
+.recipeCategory {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
