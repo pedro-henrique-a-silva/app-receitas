@@ -6,11 +6,14 @@ type RecipeDetailsProps = {
   mealOrDrink: 'meal' | 'drink';
 };
 
-const mealsApiBase = 'https://www.themealdb.com/api/json/v1/1/lookup.php?i=';
-const drinksApiBase = 'https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=';
+const mealsApiBase = 'https://www.themealdb.com/api/json/v1/1/';
+const drinksApiBase = 'https://www.thecocktaildb.com/api/json/v1/1/';
+
+// https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={id-da-receita}.
+// https://www.thecocktaildb.com/api/json/v1/1/search.php?s=.
 
 // https://www.themealdb.com/api/json/v1/1/lookup.php?i={id-da-receita}.
-// https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={id-da-receita}.
+// https://www.themealdb.com/api/json/v1/1/search.php?s=.
 
 // strCategory
 // strMealThumb
@@ -21,6 +24,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
   const { recipeID } = useParams();
 
   const [recipeDetails, setRecipeDetails] = useState<any>({});
+  const [recomendations, setRecomendations] = useState<any[]>([]);
 
   const getIngredients = () => Object
     .entries(recipeDetails)
@@ -28,13 +32,22 @@ function RecipeDetails(props: RecipeDetailsProps) {
     .map((values, index) => `${values[1]} ${recipeDetails[`strMeasure${index + 1}`]}`);
 
   useEffect(() => {
-    const apiBase = mealOrDrink === 'meal' ? mealsApiBase : drinksApiBase;
-    fetch(`${apiBase}${recipeID}`)
-      .then((response) => response.json())
-      .then((data) => setRecipeDetails(data.meals?.[0] || data.drinks?.[0]));
+    const getData = async () => {
+      const DetailsUrl = mealOrDrink === 'meal' ? mealsApiBase : drinksApiBase;
+      const RecomendationsUrl = mealOrDrink === 'meal' ? drinksApiBase : mealsApiBase;
+      const detailsResponse = await fetch(`${DetailsUrl}lookup.php?i=${recipeID}`);
+      const recomendationResponse = await fetch(`${RecomendationsUrl}search.php?s=`);
+      const details = await detailsResponse.json();
+      const recomendData = await recomendationResponse.json();
+      setRecipeDetails(details.meals?.[0] || details.drinks?.[0]);
+      setRecomendations(recomendData.meals || recomendData.drinks);
+    };
+
+    getData();
   }, [mealOrDrink, recipeID]);
 
   console.log(recipeDetails);
+  console.log(recomendations);
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
@@ -85,14 +98,14 @@ function RecipeDetails(props: RecipeDetailsProps) {
         <p data-testid="instructions">{recipeDetails?.strInstructions}</p>
       </div>
       {mealOrDrink === 'meal' && (
-        <iframe
-          title={ recipeDetails?.strMeal }
-          width="300"
-          height="300"
-          src={ recipeDetails?.strYoutube.replace('watch?v=', 'embed/') }
-          allowFullScreen
-          data-testid="video"
-        />
+        <div className={ style.recipeVideo }>
+          <iframe
+            title={ recipeDetails?.strMeal }
+            src={ recipeDetails?.strYoutube.replace('watch?v=', 'embed/') }
+            allowFullScreen
+            data-testid="video"
+          />
+        </div>
 
       )}
     </>

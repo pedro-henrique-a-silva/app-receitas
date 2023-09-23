@@ -3,20 +3,20 @@
 }
 
 .recipeCoverWrapper {
-  color: rgba(255, 255, 0);
-  display: flex;
-  justify-content: center;
   align-items: center;
+  color: yellow;
+  display: flex;
   height: 200px;
+  justify-content: center;
   overflow: hidden;
   position: relative;
   width: 100%;
 }
 
 .recipeCoverWrapper img {
+  object-fit: cover;
   position: absolute;
   width: 100%;
-  object-fit: cover;
   z-index: -1;
 }
 
@@ -25,7 +25,17 @@
 }
 
 .recipeCategory {
+  left: 10px;
   position: absolute;
   top: 10px;
-  left: 10px;
+}
+
+.recipeVideo {
+  display: flex;
+  justify-content: center;
+}
+
+.recipeVideo iframe {
+  height: 400px;
+  width: 80%;
 }
