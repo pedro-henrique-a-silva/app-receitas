@@ -108,6 +108,27 @@ function RecipeDetails(props: RecipeDetailsProps) {
         </div>
 
       )}
+      <div
+        className={ style.recipeCarousel }
+      >
+        {recomendations.slice(0, 6).map((recomendation, index) => (
+          <div
+            key={ index }
+            data-testid={ `${index}-recommendation-card` }
+          >
+            <img
+              src={ recomendation?.strMealThumb || recomendation?.strDrinkThumb }
+              alt="recipeThumb"
+            />
+            <h3
+              data-testid={ `${index}-recommendation-title` }
+            >
+              {recomendation?.strMeal || recomendation?.strDrink}
+
+            </h3>
+          </div>
+        ))}
+      </div>
     </>
   );
 }
