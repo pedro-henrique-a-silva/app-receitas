@@ -56,6 +56,33 @@ function RecipeDetails(props: RecipeDetailsProps) {
     }
   };
 
+  const handleFavoriteClick = (recipe: any) => {
+    const id = recipe.idMeal || recipe.idDrink;
+    const type = mealOrDrink.replace('s', '');
+    const nationality = recipe.strArea || '';
+    const category = recipe.strCategory;
+    const alcoholicOrNot = recipe.strAlcoholic || '';
+    const name = recipe.strMeal || recipe.strDrink;
+    const image = recipe.strMealThumb || recipe.strDrinkThumb;
+
+    const newFavoriteRecipe = {
+      id,
+      type,
+      nationality,
+      category,
+      alcoholicOrNot,
+      name,
+      image,
+    };
+
+    const recipesLocalStorage = JSON
+      .parse(localStorage.getItem('favoriteRecipes') as string)
+    || [];
+
+    localStorage.setItem('favoriteRecipes', JSON
+      .stringify([...recipesLocalStorage, newFavoriteRecipe]));
+  };
+
   const handleShareClick = () => {
     const { location: { origin, pathname } } = window;
     const url = `${origin}${pathname}`;
@@ -120,7 +147,9 @@ function RecipeDetails(props: RecipeDetailsProps) {
           >
             <img src={ shareIcon } alt="share Icon" />
           </button>
-          <button>
+          <button
+            onClick={ () => handleFavoriteClick(recipeDetails) }
+          >
             <img data-testid="favorite-btn" src={ whiteHeartIcon } alt="favorite Icon" />
           </button>
         </div>
