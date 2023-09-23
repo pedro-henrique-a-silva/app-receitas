@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import style from './RecipeDetails.module.css';
 
 type RecipeDetailsProps = {
-  mealOrDrink: 'meal' | 'drink';
+  mealOrDrink: 'meals' | 'drinks';
 };
 
 const mealsApiBase = 'https://www.themealdb.com/api/json/v1/1/';
@@ -22,6 +22,7 @@ const drinksApiBase = 'https://www.thecocktaildb.com/api/json/v1/1/';
 function RecipeDetails(props: RecipeDetailsProps) {
   const { mealOrDrink } = props;
   const { recipeID } = useParams();
+  const navigate = useNavigate();
 
   const [recipeDetails, setRecipeDetails] = useState<any>({});
   const [recomendations, setRecomendations] = useState<any[]>([]);
@@ -31,14 +32,33 @@ function RecipeDetails(props: RecipeDetailsProps) {
     .filter(([key, value]) => key.includes('strIngredient') && value)
     .map((values, index) => `${values[1]} ${recipeDetails[`strMeasure${index + 1}`]}`);
 
+  const getProgressFromLocalStorage = () => JSON
+    .parse(localStorage.getItem('inProgressRecipes') as string)
+    || { meals: {}, drinks: {} };
+
+  const isInProgress = () => {
+    const { meals, drinks } = getProgressFromLocalStorage();
+    const recipesInProgress = mealOrDrink === 'meals' ? meals : drinks;
+    return recipesInProgress[recipeID as string] !== undefined;
+  };
+
+  const handleClickStartRecipe = (inProgress: boolean) => {
+    if (!inProgress) {
+      navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
+    }
+  };
+
   useEffect(() => {
     const getData = async () => {
-      const DetailsUrl = mealOrDrink === 'meal' ? mealsApiBase : drinksApiBase;
-      const RecomendationsUrl = mealOrDrink === 'meal' ? drinksApiBase : mealsApiBase;
+      const DetailsUrl = mealOrDrink === 'meals' ? mealsApiBase : drinksApiBase;
+      const RecomendationsUrl = mealOrDrink === 'meals' ? drinksApiBase : mealsApiBase;
+
       const detailsResponse = await fetch(`${DetailsUrl}lookup.php?i=${recipeID}`);
       const recomendationResponse = await fetch(`${RecomendationsUrl}search.php?s=`);
+
       const details = await detailsResponse.json();
       const recomendData = await recomendationResponse.json();
+
       setRecipeDetails(details.meals?.[0] || details.drinks?.[0]);
       setRecomendations(recomendData.meals || recomendData.drinks);
     };
@@ -46,8 +66,12 @@ function RecipeDetails(props: RecipeDetailsProps) {
     getData();
   }, [mealOrDrink, recipeID]);
 
-  console.log(recipeDetails);
-  console.log(recomendations);
+  // console.log(recipeDetails);
+  // console.log(recomendations);
+
+  const inProgress = isInProgress();
+
+  console.log(inProgress);
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
@@ -72,7 +96,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
           data-testid="recipe-category"
         >
           {
-          (mealOrDrink === 'meal')
+          (mealOrDrink === 'meals')
             ? recipeDetails?.strCategory
             : recipeDetails?.strAlcoholic
           }
@@ -97,7 +121,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
         <h3>Instructions</h3>
         <p data-testid="instructions">{recipeDetails?.strInstructions}</p>
       </div>
-      {mealOrDrink === 'meal' && (
+      {mealOrDrink === 'meals' && (
         <div className={ style.recipeVideo }>
           <iframe
             title={ recipeDetails?.strMeal }
@@ -130,10 +154,12 @@ function RecipeDetails(props: RecipeDetailsProps) {
         ))}
       </div>
       <button
+        type="button"
+        onClick={ () => handleClickStartRecipe(inProgress) }
         className={ style.startRecipeBtn }
         data-testid="start-recipe-btn"
       >
-        Iniciar Receita
+        {inProgress ? 'Continue Recipe' : 'Start Recipe'}
       </button>
     </>
   );
