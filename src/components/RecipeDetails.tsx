@@ -129,6 +129,12 @@ function RecipeDetails(props: RecipeDetailsProps) {
           </div>
         ))}
       </div>
+      <button
+        className={ style.startRecipeBtn }
+        data-testid="start-recipe-btn"
+      >
+        Iniciar Receita
+      </button>
     </>
   );
 }
