@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import style from './RecipeDetails.module.css';
+import whiteHeartIcon from '../images/whiteHeartIcon.svg';
+import shareIcon from '../images/shareIcon.svg';
 
 type RecipeDetailsProps = {
   mealOrDrink: 'meals' | 'drinks';
@@ -66,9 +68,6 @@ function RecipeDetails(props: RecipeDetailsProps) {
     getData();
   }, [mealOrDrink, recipeID]);
 
-  // console.log(recipeDetails);
-  // console.log(recomendations);
-
   const inProgress = isInProgress();
 
   console.log(inProgress);
@@ -102,6 +101,14 @@ function RecipeDetails(props: RecipeDetailsProps) {
           }
 
         </h3>
+        <div className={ style.socialButtons }>
+          <button>
+            <img data-testid="share-btn" src={ shareIcon } alt="share Icon" />
+          </button>
+          <button>
+            <img data-testid="favorite-btn" src={ whiteHeartIcon } alt="favorite Icon" />
+          </button>
+        </div>
       </div>
 
       <div>
