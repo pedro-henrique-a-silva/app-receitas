@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Message from './Message';
 import style from './RecipeDetails.module.css';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import shareIcon from '../images/shareIcon.svg';
@@ -28,6 +29,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
   const [recipeDetails, setRecipeDetails] = useState<any>({});
   const [recomendations, setRecomendations] = useState<any[]>([]);
+  const [isVisible, setIsVisible] = useState(false);
 
   const getIngredients = () => Object
     .entries(recipeDetails)
@@ -44,10 +46,21 @@ function RecipeDetails(props: RecipeDetailsProps) {
     return recipesInProgress[recipeID as string] !== undefined;
   };
 
+  const toggleIsVisible = () => {
+    setIsVisible(!isVisible);
+  };
+
   const handleClickStartRecipe = (inProgress: boolean) => {
     if (!inProgress) {
       navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
     }
+  };
+
+  const handleShareClick = () => {
+    const { location: { origin, pathname } } = window;
+    const url = `${origin}${pathname}`;
+    navigator.clipboard.writeText(url);
+    toggleIsVisible();
   };
 
   useEffect(() => {
@@ -70,12 +83,11 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
   const inProgress = isInProgress();
 
-  console.log(inProgress);
-
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
   return (
     <>
+      {(isVisible) && <Message toggleIsVisible={ toggleIsVisible } />}
       <div className={ style.recipeCoverWrapper }>
         <img
           data-testid="recipe-photo"
@@ -102,8 +114,11 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
         </h3>
         <div className={ style.socialButtons }>
-          <button>
-            <img data-testid="share-btn" src={ shareIcon } alt="share Icon" />
+          <button
+            data-testid="share-btn"
+            onClick={ handleShareClick }
+          >
+            <img src={ shareIcon } alt="share Icon" />
           </button>
           <button>
             <img data-testid="favorite-btn" src={ whiteHeartIcon } alt="favorite Icon" />
