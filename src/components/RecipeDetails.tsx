@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Message from './Message';
 import style from './RecipeDetails.module.css';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
+import blackHeartIcon from '../images/blackHeartIcon.svg';
 import shareIcon from '../images/shareIcon.svg';
 
 type RecipeDetailsProps = {
@@ -30,20 +31,26 @@ function RecipeDetails(props: RecipeDetailsProps) {
   const [recipeDetails, setRecipeDetails] = useState<any>({});
   const [recomendations, setRecomendations] = useState<any[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [favorite, setFavorite] = useState(false);
 
   const getIngredients = () => Object
     .entries(recipeDetails)
     .filter(([key, value]) => key.includes('strIngredient') && value)
     .map((values, index) => `${values[1]} ${recipeDetails[`strMeasure${index + 1}`]}`);
 
-  const getProgressFromLocalStorage = () => JSON
-    .parse(localStorage.getItem('inProgressRecipes') as string)
-    || { meals: {}, drinks: {} };
+  const getFromLocalStorage = (key: string) => JSON
+    .parse(localStorage.getItem(key) as string);
 
   const isInProgress = () => {
-    const { meals, drinks } = getProgressFromLocalStorage();
+    const { meals, drinks } = getFromLocalStorage('inProgressRecipes')
+    || { meals: {}, drinks: {} };
     const recipesInProgress = mealOrDrink === 'meals' ? meals : drinks;
     return recipesInProgress[recipeID as string] !== undefined;
+  };
+
+  const isFavorite = () => {
+    const favorites = getFromLocalStorage('favoriteRecipes') || [];
+    return favorites.find((recipe: any) => recipe.id === recipeID) !== undefined;
   };
 
   const toggleIsVisible = () => {
@@ -56,14 +63,14 @@ function RecipeDetails(props: RecipeDetailsProps) {
     }
   };
 
-  const handleFavoriteClick = (recipe: any) => {
-    const id = recipe.idMeal || recipe.idDrink;
+  const handleFavoriteClick = (recipeData: any) => {
+    const id = recipeData.idMeal || recipeData.idDrink;
     const type = mealOrDrink.replace('s', '');
-    const nationality = recipe.strArea || '';
-    const category = recipe.strCategory;
-    const alcoholicOrNot = recipe.strAlcoholic || '';
-    const name = recipe.strMeal || recipe.strDrink;
-    const image = recipe.strMealThumb || recipe.strDrinkThumb;
+    const nationality = recipeData.strArea || '';
+    const category = recipeData.strCategory;
+    const alcoholicOrNot = recipeData.strAlcoholic || '';
+    const name = recipeData.strMeal || recipeData.strDrink;
+    const image = recipeData.strMealThumb || recipeData.strDrinkThumb;
 
     const newFavoriteRecipe = {
       id,
@@ -79,8 +86,20 @@ function RecipeDetails(props: RecipeDetailsProps) {
       .parse(localStorage.getItem('favoriteRecipes') as string)
     || [];
 
-    localStorage.setItem('favoriteRecipes', JSON
-      .stringify([...recipesLocalStorage, newFavoriteRecipe]));
+    if (isFavorite()) {
+      const newFavoriteRecipes = recipesLocalStorage
+        .filter((recipe: any) => recipe.id !== recipeID);
+
+      localStorage.setItem('favoriteRecipes', JSON
+        .stringify(newFavoriteRecipes));
+
+      setFavorite(false);
+    } else {
+      localStorage.setItem('favoriteRecipes', JSON
+        .stringify([...recipesLocalStorage, newFavoriteRecipe]));
+
+      setFavorite(true);
+    }
   };
 
   const handleShareClick = () => {
@@ -103,12 +122,14 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
       setRecipeDetails(details.meals?.[0] || details.drinks?.[0]);
       setRecomendations(recomendData.meals || recomendData.drinks);
+      setFavorite(isFavorite());
     };
 
     getData();
   }, [mealOrDrink, recipeID]);
 
   const inProgress = isInProgress();
+  // const favorite = isFavorite();
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
@@ -150,7 +171,11 @@ function RecipeDetails(props: RecipeDetailsProps) {
           <button
             onClick={ () => handleFavoriteClick(recipeDetails) }
           >
-            <img data-testid="favorite-btn" src={ whiteHeartIcon } alt="favorite Icon" />
+            <img
+              data-testid="favorite-btn"
+              src={ (favorite) ? blackHeartIcon : whiteHeartIcon }
+              alt="favorite Icon"
+            />
           </button>
         </div>
       </div>
