@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Message from '../components/Message';
 import Carousel from '../components/Carousel';
@@ -49,10 +49,10 @@ function RecipeDetails(props: RecipeDetailsProps) {
     return recipesInProgress[recipeID as string];
   };
 
-  const isFavorite = () => {
+  const isFavorite = useCallback(() => {
     const favorites = getFromLocalStorage('favoriteRecipes') || [];
     return favorites.find((recipe: any) => recipe.id === recipeID) !== undefined;
-  };
+  }, [recipeID]);
 
   const toggleIsVisible = () => {
     setIsVisible(!isVisible);
@@ -123,7 +123,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
     };
 
     getData();
-  }, [mealOrDrink, recipeID]);
+  }, [mealOrDrink, recipeID, isFavorite]);
 
   const inProgress = isInProgress();
 
