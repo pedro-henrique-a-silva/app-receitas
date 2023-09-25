@@ -5,7 +5,7 @@ import Drinks from './Pages/Drinks';
 import Profile from './Pages/Profile';
 import DoneRecipes from './Pages/DoneRecipes';
 import FavoriteRecipes from './Pages/FavoriteRecipes';
-import RecipeDetails from './components/RecipeDetails';
+import RecipeDetails from './Pages/RecipeDetails';
 
 function App() {
   return (

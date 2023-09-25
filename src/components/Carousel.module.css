@@ -1,0 +1,11 @@
+.recipeCarousel {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  overflow-x: scroll;
+}
+
+.recipeCarousel img {
+  box-shadow: 0 0 5px 0 black;
+  width: 180px;
+}

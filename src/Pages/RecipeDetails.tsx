@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Message from './Message';
+import Message from '../components/Message';
+import Carousel from '../components/Carousel';
 import style from './RecipeDetails.module.css';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
@@ -29,14 +30,14 @@ function RecipeDetails(props: RecipeDetailsProps) {
   const navigate = useNavigate();
 
   const [recipeDetails, setRecipeDetails] = useState<any>({});
-  const [recomendations, setRecomendations] = useState<any[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [favorite, setFavorite] = useState(false);
 
   const getIngredients = () => Object
     .entries(recipeDetails)
     .filter(([key, value]) => key.includes('strIngredient') && value)
-    .map((values, index) => `${values[1]} ${recipeDetails[`strMeasure${index + 1}`]}`);
+    .map((values, index) => (`${values[1]} ${recipeDetails[`strMeasure${index + 1}`]
+    || ''}`));
 
   const getFromLocalStorage = (key: string) => JSON
     .parse(localStorage.getItem(key) as string);
@@ -45,7 +46,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
     const { meals, drinks } = getFromLocalStorage('inProgressRecipes')
     || { meals: {}, drinks: {} };
     const recipesInProgress = mealOrDrink === 'meals' ? meals : drinks;
-    return recipesInProgress[recipeID as string] !== undefined;
+    return recipesInProgress[recipeID as string];
   };
 
   const isFavorite = () => {
@@ -112,16 +113,12 @@ function RecipeDetails(props: RecipeDetailsProps) {
   useEffect(() => {
     const getData = async () => {
       const DetailsUrl = mealOrDrink === 'meals' ? mealsApiBase : drinksApiBase;
-      const RecomendationsUrl = mealOrDrink === 'meals' ? drinksApiBase : mealsApiBase;
 
       const detailsResponse = await fetch(`${DetailsUrl}lookup.php?i=${recipeID}`);
-      const recomendationResponse = await fetch(`${RecomendationsUrl}search.php?s=`);
 
       const details = await detailsResponse.json();
-      const recomendData = await recomendationResponse.json();
 
       setRecipeDetails(details.meals?.[0] || details.drinks?.[0]);
-      setRecomendations(recomendData.meals || recomendData.drinks);
       setFavorite(isFavorite());
     };
 
@@ -129,6 +126,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
   }, [mealOrDrink, recipeID]);
 
   const inProgress = isInProgress();
+
   // const favorite = isFavorite();
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
@@ -208,27 +206,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
         </div>
 
       )}
-      <div
-        className={ style.recipeCarousel }
-      >
-        {recomendations.slice(0, 6).map((recomendation, index) => (
-          <div
-            key={ index }
-            data-testid={ `${index}-recommendation-card` }
-          >
-            <img
-              src={ recomendation?.strMealThumb || recomendation?.strDrinkThumb }
-              alt="recipeThumb"
-            />
-            <h3
-              data-testid={ `${index}-recommendation-title` }
-            >
-              {recomendation?.strMeal || recomendation?.strDrink}
-
-            </h3>
-          </div>
-        ))}
-      </div>
+      <Carousel mealOrDrink={ mealOrDrink } />
       <button
         type="button"
         onClick={ () => handleClickStartRecipe(inProgress) }
