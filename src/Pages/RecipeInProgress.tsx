@@ -6,6 +6,7 @@ import { isFavorite, isInProgress } from '../utils/utilsLocalStorage';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 import shareIcon from '../images/shareIcon.svg';
+import Message from '../components/Message';
 
 type RecipeInProgressProps = {
   mealOrDrink: 'meals' | 'drinks';
@@ -78,6 +79,16 @@ function RecipeInProgress(props: RecipeInProgressProps) {
     toggleIsVisible();
   };
 
+  const handleIngredientChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = event.target.checked;
+    const parentEl = event.target.parentElement;
+    if (isChecked) {
+      (parentEl as HTMLElement).style.textDecoration = 'line-through solid rgb(0, 0, 0)';
+    } else {
+      (parentEl as HTMLElement).style.textDecoration = 'none';
+    }
+  };
+
   useEffect(() => {
     const recipe = JSON.parse(localStorage.getItem('inProgressRecipes') as string);
     setRecipesInProgress(recipe);
@@ -86,10 +97,11 @@ function RecipeInProgress(props: RecipeInProgressProps) {
 
   const inProgress = isInProgress(mealOrDrink, recipeID);
 
-  if (!recipeID) return <div>Recipe Not Found</div>;
+  if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
   return (
     <>
+      {(isVisible) && <Message toggleIsVisible={ toggleIsVisible } />}
       <div className={ style.recipeCoverWrapper }>
         <img
           data-testid="recipe-photo"
@@ -142,8 +154,16 @@ function RecipeInProgress(props: RecipeInProgressProps) {
               key={ index }
               data-testid={ `${index}-ingredient-name-and-measure` }
             >
-              <label data-testid={ `${index}-ingredient-step` }>
-                <input type="checkbox" name={ ingredient.trim() } id="" />
+              <label
+                data-testid={ `${index}-ingredient-step` }
+                htmlFor={ ingredient.trim() }
+              >
+                <input
+                  onChange={ (e) => handleIngredientChange(e) }
+                  type="checkbox"
+                  name={ ingredient.trim() }
+                  id={ ingredient.trim() }
+                />
                 {ingredient as string}
               </label>
             </li>
