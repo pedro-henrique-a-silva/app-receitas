@@ -142,7 +142,10 @@ function RecipeInProgress(props: RecipeInProgressProps) {
               key={ index }
               data-testid={ `${index}-ingredient-name-and-measure` }
             >
-              {ingredient as string}
+              <label data-testid={ `${index}-ingredient-step` }>
+                <input type="checkbox" name={ ingredient.trim() } id="" />
+                {ingredient as string}
+              </label>
             </li>
           ))}
         </ul>
