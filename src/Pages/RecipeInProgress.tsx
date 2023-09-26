@@ -1,34 +1,24 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import Message from '../components/Message';
-import Carousel from '../components/Carousel';
-import style from './RecipeDetails.module.css';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import style from './RecipeInProgress.module.css';
+import useFetch from '../hooks/useFetch';
+import { isFavorite, isInProgress } from '../utils/utilsLocalStorage';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 import shareIcon from '../images/shareIcon.svg';
-import useFetch from '../hooks/useFetch';
-import {
-  getFromLocalStorage,
-  isFavorite,
-  isInProgress,
-} from '../utils/utilsLocalStorage';
 
-type RecipeDetailsProps = {
+type RecipeInProgressProps = {
   mealOrDrink: 'meals' | 'drinks';
 };
 
-// strCategory
-// strMealThumb
-// strMeal
-
-function RecipeDetails(props: RecipeDetailsProps) {
+function RecipeInProgress(props: RecipeInProgressProps) {
   const { mealOrDrink } = props;
   const { recipeID } = useParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const {
-    recipeDetails } = useFetch(mealOrDrink, recipeID, true, false);
+  const { recipeDetails } = useFetch(mealOrDrink, recipeID, true, false);
 
+  const [recipesInProgress, setRecipesInProgress] = useState<any>({});
   const [isVisible, setIsVisible] = useState(false);
   const [favorite, setFavorite] = useState(false);
 
@@ -40,20 +30,6 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
   const toggleIsVisible = () => {
     setIsVisible(!isVisible);
-  };
-
-  const handleClickStartRecipe = (inProgress: boolean) => {
-    const recipeInProgress = getFromLocalStorage('inProgressRecipes')
-    || { meals: {}, drinks: {} };
-
-    if (!inProgress) {
-      recipeInProgress[mealOrDrink][recipeID as string] = [
-        ...Object.keys(getIngredients())];
-      localStorage.setItem('inProgressRecipes', JSON.stringify(recipeInProgress));
-      navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
-    } else {
-      navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
-    }
   };
 
   const handleFavoriteClick = (recipeData: any) => {
@@ -77,7 +53,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
     const recipesLocalStorage = JSON
       .parse(localStorage.getItem('favoriteRecipes') as string)
-    || [];
+      || [];
 
     if (isFavorite(recipeID)) {
       const newFavoriteRecipes = recipesLocalStorage
@@ -103,16 +79,17 @@ function RecipeDetails(props: RecipeDetailsProps) {
   };
 
   useEffect(() => {
+    const recipe = JSON.parse(localStorage.getItem('inProgressRecipes') as string);
+    setRecipesInProgress(recipe);
     setFavorite(isFavorite(recipeID));
   }, [recipeID]);
 
   const inProgress = isInProgress(mealOrDrink, recipeID);
 
-  if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
+  if (!recipeID) return <div>Recipe Not Found</div>;
 
   return (
     <>
-      {(isVisible) && <Message toggleIsVisible={ toggleIsVisible } />}
       <div className={ style.recipeCoverWrapper }>
         <img
           data-testid="recipe-photo"
@@ -174,32 +151,23 @@ function RecipeDetails(props: RecipeDetailsProps) {
         <h3>Instructions</h3>
         <p data-testid="instructions">{recipeDetails?.strInstructions}</p>
       </div>
-      {mealOrDrink === 'meals' && (
-        <div className={ style.recipeVideo }>
-          <iframe
-            title={ recipeDetails?.strMeal }
-            src={ recipeDetails?.strYoutube.replace('watch?v=', 'embed/') }
-            allowFullScreen
-            data-testid="video"
-          />
-        </div>
-
-      )}
-      <Carousel mealOrDrink={ mealOrDrink } />
       <button
         type="button"
-        onClick={ () => handleClickStartRecipe(inProgress) }
         className={ style.startRecipeBtn }
-        data-testid="start-recipe-btn"
+        data-testid="finish-recipe-btn"
       >
-        {inProgress ? 'Continue Recipe' : 'Start Recipe'}
+        Finish Recipe
       </button>
     </>
   );
 }
 
-// Os ingredientes devem ter o atributo data-testid="${index}-ingredient-name-and-measure".
-// O texto de instruções deve ter o atributo data-testid="instructions".
-// O vídeo, presente somente na tela de comidas, deve ter o atributo data-testid="video".
+export default RecipeInProgress;
 
-export default RecipeDetails;
+// A foto deve ter o atributo data-testid="recipe-photo".
+// O título deve ter o atributo data-testid="recipe-title".
+// O botão de compartilhar deve ter o atributo data-testid="share-btn".
+// O botão de favoritar deve ter o atributo data-testid="favorite-btn".
+// O texto da categoria deve ter o atributo data-testid="recipe-category".
+// O elemento de instruções deve ter o atributo data-testid="instructions".
+// O botão para finalizar a receita deve ter o atributo data-testid="finish-recipe-btn".
