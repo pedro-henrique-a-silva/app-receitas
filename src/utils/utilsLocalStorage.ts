@@ -12,3 +12,25 @@ export const isFavorite = (recipeID: string | undefined) => {
   const favorites = getFromLocalStorage('favoriteRecipes') || [];
   return favorites.find((recipe: any) => recipe.id === recipeID) !== undefined;
 };
+
+export const saveToLocalStorage = (
+  mealOrDrink: string,
+  recipeID: string | undefined,
+  ingredientsProgress: boolean[],
+) => {
+  const recipeInProgressLocalStore = getFromLocalStorage('inProgressRecipes')
+  || { meals: {}, drinks: {} };
+
+  const recipesData = recipeInProgressLocalStore[mealOrDrink];
+  const newRecipesData = { ...recipesData, [recipeID as string]: ingredientsProgress };
+
+  const newRecipeInProgressLocalStore = {
+    ...recipeInProgressLocalStore,
+    [mealOrDrink]: newRecipesData,
+  };
+
+  localStorage.setItem(
+    'inProgressRecipes',
+    JSON.stringify(newRecipeInProgressLocalStore),
+  );
+};

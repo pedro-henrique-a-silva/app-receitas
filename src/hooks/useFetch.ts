@@ -24,7 +24,7 @@ function useRecipeDetails(
   mealOrDrink: string = '',
   recipeID: string = '',
   fetchDetails: boolean,
-  fetchAll: boolean = false,
+  fetchRecomendation: boolean = false,
 ) {
   const [recipeDetails, setRecipeDetails] = useState<any>({});
   const [allRecipes, setAllRecipes] = useState<any[]>([]);
@@ -38,8 +38,9 @@ function useRecipeDetails(
         setRecipeDetails(details.meals?.[0] || details.drinks?.[0]);
       }
 
-      if (fetchAll) {
-        const url = `${querysUrl[mealOrDrink]}search.php?s=`;
+      if (fetchRecomendation) {
+        const urlPart = mealOrDrink === 'meals' ? 'drinks' : 'meals';
+        const url = `${querysUrl[urlPart]}search.php?s=`;
         const allDataResponse = await fetch(url);
         const allData = await allDataResponse.json();
         setAllRecipes(allData.meals || allData.drinks);
@@ -47,7 +48,7 @@ function useRecipeDetails(
     };
 
     getRecipeDetails();
-  }, [mealOrDrink, recipeID, fetchDetails, fetchAll]);
+  }, [mealOrDrink, recipeID, fetchDetails, fetchRecomendation]);
 
   return {
     recipeDetails,

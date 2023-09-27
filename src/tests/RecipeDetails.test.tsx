@@ -140,4 +140,37 @@ describe('Testa tela de detalhes de receita', () => {
     expect(ingredients2.innerHTML).toContain('Ginger ale');
     expect(ingredients3.innerHTML).toContain('Ice');
   });
+
+  test('Testando compartilhamento de bebidas', async () => {
+    const favoriteRecipeDrinks = [
+      {
+        id: '15997',
+        type: 'drink',
+        nationality: '',
+        category: 'Ordinary Drink',
+        alcoholicOrNot: 'Optional alcohol',
+        name: 'GG',
+        image: 'https://www.thecocktaildb.com/images/media/drink/vyxwut1468875960.jpg',
+      },
+    ];
+
+    const { user } = renderWithRouterAndContext(<App />, { route: ROTA_BEBIDA });
+
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+
+    const shareBtn = await screen.findByTestId(SHARE_BTN_TESTID);
+    const favoriteBtn = await screen.findByTestId(FAVORITE_BTN_TESTID);
+
+    await user.click(shareBtn);
+
+    expect(screen.getByText('Link copied!')).toBeInTheDocument();
+
+    await user.click(favoriteBtn);
+    const favoritesFromStorage1 = JSON.parse(localStorage.getItem('favoriteRecipes') as string);
+    expect(favoritesFromStorage1).toEqual(favoriteRecipeDrinks);
+
+    await user.click(favoriteBtn);
+    const favoritesFromStorage2 = JSON.parse(localStorage.getItem('favoriteRecipes') as string);
+    expect(favoritesFromStorage2).toEqual([]);
+  });
 });

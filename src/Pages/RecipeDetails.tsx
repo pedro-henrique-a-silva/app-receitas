@@ -8,7 +8,6 @@ import blackHeartIcon from '../images/blackHeartIcon.svg';
 import shareIcon from '../images/shareIcon.svg';
 import useFetch from '../hooks/useFetch';
 import {
-  getFromLocalStorage,
   isFavorite,
   isInProgress,
 } from '../utils/utilsLocalStorage';
@@ -16,10 +15,6 @@ import {
 type RecipeDetailsProps = {
   mealOrDrink: 'meals' | 'drinks';
 };
-
-// strCategory
-// strMealThumb
-// strMeal
 
 function RecipeDetails(props: RecipeDetailsProps) {
   const { mealOrDrink } = props;
@@ -42,7 +37,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
     setIsVisible(!isVisible);
   };
 
-  const handleClickStartRecipe = (inProgress: boolean) => {
+  const handleClickStartRecipe = () => {
     navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
   };
 
@@ -178,7 +173,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
       <Carousel mealOrDrink={ mealOrDrink } />
       <button
         type="button"
-        onClick={ () => handleClickStartRecipe(inProgress) }
+        onClick={ () => handleClickStartRecipe() }
         className={ style.startRecipeBtn }
         data-testid="start-recipe-btn"
       >

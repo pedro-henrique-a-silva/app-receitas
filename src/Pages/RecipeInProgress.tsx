@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import style from './RecipeInProgress.module.css';
 import useFetch from '../hooks/useFetch';
 import { getFromLocalStorage,
-  isFavorite, isInProgress } from '../utils/utilsLocalStorage';
+  isFavorite,
+  saveToLocalStorage } from '../utils/utilsLocalStorage';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 import shareIcon from '../images/shareIcon.svg';
@@ -16,7 +17,7 @@ type RecipeInProgressProps = {
 function RecipeInProgress(props: RecipeInProgressProps) {
   const { mealOrDrink } = props;
   const { recipeID } = useParams();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { recipeDetails } = useFetch(mealOrDrink, recipeID, true, false);
 
@@ -80,24 +81,6 @@ function RecipeInProgress(props: RecipeInProgressProps) {
     toggleIsVisible();
   };
 
-  const saveToLocalStorage = (ingredientsProgress: boolean[]) => {
-    const recipeInProgressLocalStore = getFromLocalStorage('inProgressRecipes')
-    || { meals: {}, drinks: {} };
-
-    const recipesData = recipeInProgressLocalStore[mealOrDrink];
-    const newRecipesData = { ...recipesData, [recipeID as string]: ingredientsProgress };
-
-    const newRecipeInProgressLocalStore = {
-      ...recipeInProgressLocalStore,
-      [mealOrDrink]: newRecipesData,
-    };
-
-    localStorage.setItem(
-      'inProgressRecipes',
-      JSON.stringify(newRecipeInProgressLocalStore),
-    );
-  };
-
   const handleIngredientChange = (
     ingredientID: number,
     event: React.ChangeEvent<HTMLInputElement>,
@@ -121,8 +104,32 @@ function RecipeInProgress(props: RecipeInProgressProps) {
     ingredientsProgress = ingredientsProgress
       .map((ingredient, index) => (index === ingredientID ? isChecked : ingredient));
 
-    saveToLocalStorage(ingredientsProgress);
+    saveToLocalStorage(mealOrDrink, recipeID, ingredientsProgress);
     setRecipeInProgress(ingredientsProgress);
+  };
+
+  const handleFinishRecipe = () => {
+    const dateNow = new Date();
+    const newFinishRecipe = {
+      id: recipeDetails.idMeal || recipeDetails.idDrink,
+      type: mealOrDrink.replace('s', ''),
+      nationality: recipeDetails.strArea || '',
+      category: recipeDetails.strCategory,
+      alcoholicOrNot: recipeDetails.strAlcoholic || '',
+      name: recipeDetails.strMeal || recipeDetails.strDrink,
+      image: recipeDetails.strMealThumb || recipeDetails.strDrinkThumb,
+      doneDate: dateNow.toISOString(),
+      tags: (recipeDetails.strTags) ? recipeDetails.strTags.split(',') : [],
+    };
+
+    const recipesLocalStorage = JSON
+      .parse(localStorage.getItem('doneRecipes') as string)
+      || [];
+
+    localStorage.setItem('doneRecipes', JSON
+      .stringify([...recipesLocalStorage, newFinishRecipe]));
+
+    navigate('/done-recipes');
   };
 
   useEffect(() => {
@@ -223,6 +230,7 @@ function RecipeInProgress(props: RecipeInProgressProps) {
       </div>
       <button
         type="button"
+        onClick={ handleFinishRecipe }
         disabled={ recipeInProgress.some((ingredient) => ingredient === false) }
         className={ style.finishRecipeBtn }
         data-testid="finish-recipe-btn"
@@ -234,11 +242,3 @@ function RecipeInProgress(props: RecipeInProgressProps) {
 }
 
 export default RecipeInProgress;
-
-// A foto deve ter o atributo data-testid="recipe-photo".
-// O título deve ter o atributo data-testid="recipe-title".
-// O botão de compartilhar deve ter o atributo data-testid="share-btn".
-// O botão de favoritar deve ter o atributo data-testid="favorite-btn".
-// O texto da categoria deve ter o atributo data-testid="recipe-category".
-// O elemento de instruções deve ter o atributo data-testid="instructions".
-// O botão para finalizar a receita deve ter o atributo data-testid="finish-recipe-btn".
