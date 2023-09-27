@@ -1,29 +1,27 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Message from '../components/Message';
-import Carousel from '../components/Carousel';
-import style from './RecipeDetails.module.css';
+import style from './RecipeInProgress.module.css';
+import useFetch from '../hooks/useFetch';
+import { getFromLocalStorage,
+  isFavorite,
+  saveToLocalStorage } from '../utils/utilsLocalStorage';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 import shareIcon from '../images/shareIcon.svg';
-import useFetch from '../hooks/useFetch';
-import {
-  isFavorite,
-  isInProgress,
-} from '../utils/utilsLocalStorage';
+import Message from '../components/Message';
 
-type RecipeDetailsProps = {
+type RecipeInProgressProps = {
   mealOrDrink: 'meals' | 'drinks';
 };
 
-function RecipeDetails(props: RecipeDetailsProps) {
+function RecipeInProgress(props: RecipeInProgressProps) {
   const { mealOrDrink } = props;
   const { recipeID } = useParams();
   const navigate = useNavigate();
 
-  const {
-    recipeDetails } = useFetch(mealOrDrink, recipeID, true, false);
+  const { recipeDetails } = useFetch(mealOrDrink, recipeID, true, false);
 
+  const [recipeInProgress, setRecipeInProgress] = useState<boolean[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [favorite, setFavorite] = useState(false);
 
@@ -35,10 +33,6 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
   const toggleIsVisible = () => {
     setIsVisible(!isVisible);
-  };
-
-  const handleClickStartRecipe = () => {
-    navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
   };
 
   const handleFavoriteClick = (recipeData: any) => {
@@ -62,7 +56,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
     const recipesLocalStorage = JSON
       .parse(localStorage.getItem('favoriteRecipes') as string)
-    || [];
+      || [];
 
     if (isFavorite(recipeID)) {
       const newFavoriteRecipes = recipesLocalStorage
@@ -83,15 +77,76 @@ function RecipeDetails(props: RecipeDetailsProps) {
   const handleShareClick = () => {
     const { location: { origin, pathname } } = window;
     const url = `${origin}${pathname}`;
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(url.replace('/in-progress', ''));
     toggleIsVisible();
   };
 
-  useEffect(() => {
-    setFavorite(isFavorite(recipeID));
-  }, [recipeID]);
+  const handleIngredientChange = (
+    ingredientID: number,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const isChecked = event.target.checked;
+    const parentEl = event.target.parentElement;
+    let ingredientsProgress: boolean[] = recipeInProgress;
 
-  const inProgress = isInProgress(mealOrDrink, recipeID);
+    if (ingredientsProgress.length === 0) {
+      ingredientsProgress = getIngredients().map(() => false);
+    }
+
+    if (isChecked) {
+      // (parentEl as HTMLElement).style.textDecoration = 'line-through solid rgb(0, 0, 0)';
+      (parentEl as HTMLElement).classList.add(style.ingredientChecked);
+    } else {
+      (parentEl as HTMLElement).classList.remove(style.ingredientChecked);
+      // (parentEl as HTMLElement).style.textDecoration = 'none';
+    }
+
+    ingredientsProgress = ingredientsProgress
+      .map((ingredient, index) => (index === ingredientID ? isChecked : ingredient));
+
+    saveToLocalStorage(mealOrDrink, recipeID, ingredientsProgress);
+    setRecipeInProgress(ingredientsProgress);
+  };
+
+  const handleFinishRecipe = () => {
+    const dateNow = new Date();
+    const newFinishRecipe = {
+      id: recipeDetails.idMeal || recipeDetails.idDrink,
+      type: mealOrDrink.replace('s', ''),
+      nationality: recipeDetails.strArea || '',
+      category: recipeDetails.strCategory,
+      alcoholicOrNot: recipeDetails.strAlcoholic || '',
+      name: recipeDetails.strMeal || recipeDetails.strDrink,
+      image: recipeDetails.strMealThumb || recipeDetails.strDrinkThumb,
+      doneDate: dateNow.toISOString(),
+      tags: (recipeDetails.strTags) ? recipeDetails.strTags.split(',') : [],
+    };
+
+    const recipesLocalStorage = JSON
+      .parse(localStorage.getItem('doneRecipes') as string)
+      || [];
+
+    localStorage.setItem('doneRecipes', JSON
+      .stringify([...recipesLocalStorage, newFinishRecipe]));
+
+    navigate('/done-recipes');
+  };
+
+  useEffect(() => {
+    const recipeInProgressLocalStore = getFromLocalStorage('inProgressRecipes')
+    || { meals: {}, drinks: {} };
+    let ingredientsProgress = [];
+
+    const recipesData = recipeInProgressLocalStore[mealOrDrink];
+    if (Object.keys(recipesData).includes(recipeID as string)) {
+      ingredientsProgress = recipesData[recipeID as string];
+    }
+
+    setRecipeInProgress(ingredientsProgress);
+    setFavorite(isFavorite(recipeID));
+  }, [recipeID, mealOrDrink]);
+
+  // const inProgress = isInProgress(mealOrDrink, recipeID);
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
@@ -150,7 +205,21 @@ function RecipeDetails(props: RecipeDetailsProps) {
               key={ index }
               data-testid={ `${index}-ingredient-name-and-measure` }
             >
-              {ingredient as string}
+              <label
+                data-testid={ `${index}-ingredient-step` }
+                className={ (recipeInProgress[index]) ? style.ingredientChecked : '' }
+                htmlFor={ ingredient.trim() }
+              >
+                <input
+                  onChange={ (e) => handleIngredientChange(index, e) }
+                  type="checkbox"
+                  checked={ (recipeInProgress.length === 0)
+                    ? false : recipeInProgress[index] }
+                  name={ ingredient.trim() }
+                  id={ ingredient.trim() }
+                />
+                {ingredient as string}
+              </label>
             </li>
           ))}
         </ul>
@@ -159,32 +228,17 @@ function RecipeDetails(props: RecipeDetailsProps) {
         <h3>Instructions</h3>
         <p data-testid="instructions">{recipeDetails?.strInstructions}</p>
       </div>
-      {mealOrDrink === 'meals' && (
-        <div className={ style.recipeVideo }>
-          <iframe
-            title={ recipeDetails?.strMeal }
-            src={ recipeDetails?.strYoutube.replace('watch?v=', 'embed/') }
-            allowFullScreen
-            data-testid="video"
-          />
-        </div>
-
-      )}
-      <Carousel mealOrDrink={ mealOrDrink } />
       <button
         type="button"
-        onClick={ () => handleClickStartRecipe() }
-        className={ style.startRecipeBtn }
-        data-testid="start-recipe-btn"
+        onClick={ handleFinishRecipe }
+        disabled={ recipeInProgress.some((ingredient) => ingredient === false) }
+        className={ style.finishRecipeBtn }
+        data-testid="finish-recipe-btn"
       >
-        {inProgress ? 'Continue Recipe' : 'Start Recipe'}
+        Finish Recipe
       </button>
     </>
   );
 }
 
-// Os ingredientes devem ter o atributo data-testid="${index}-ingredient-name-and-measure".
-// O texto de instruções deve ter o atributo data-testid="instructions".
-// O vídeo, presente somente na tela de comidas, deve ter o atributo data-testid="video".
-
-export default RecipeDetails;
+export default RecipeInProgress;
