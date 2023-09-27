@@ -43,17 +43,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
   };
 
   const handleClickStartRecipe = (inProgress: boolean) => {
-    const recipeInProgress = getFromLocalStorage('inProgressRecipes')
-    || { meals: {}, drinks: {} };
-
-    if (!inProgress) {
-      recipeInProgress[mealOrDrink][recipeID as string] = [
-        ...Object.keys(getIngredients())];
-      localStorage.setItem('inProgressRecipes', JSON.stringify(recipeInProgress));
-      navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
-    } else {
-      navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
-    }
+    navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
   };
 
   const handleFavoriteClick = (recipeData: any) => {

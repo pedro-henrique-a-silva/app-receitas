@@ -29,3 +29,7 @@
   position: absolute;
   top: 10px;
 }
+
+.ingredientChecked {
+  text-decoration: line-through solid rgb(0, 0, 0);
+}

@@ -80,11 +80,11 @@ describe('Testa tela de detalhes de receita', () => {
 
     await user.click(ingredients1);
 
-    expect(ingredients1.style.textDecoration).toBe('line-through solid rgb(0, 0, 0)');
+    expect(window.getComputedStyle(ingredients1).textDecoration).toBe('line-through solid rgb(0, 0, 0)');
 
     await user.click(ingredients1);
 
-    expect(ingredients1.style.textDecoration).toBe('none');
+    expect(window.getComputedStyle(ingredients1).textDecoration).toBe('');
 
     await user.click(shareBtn);
 

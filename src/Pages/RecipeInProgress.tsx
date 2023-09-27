@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import style from './RecipeInProgress.module.css';
 import useFetch from '../hooks/useFetch';
-import { isFavorite, isInProgress } from '../utils/utilsLocalStorage';
+import { getFromLocalStorage,
+  isFavorite, isInProgress } from '../utils/utilsLocalStorage';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 import shareIcon from '../images/shareIcon.svg';
@@ -19,7 +20,7 @@ function RecipeInProgress(props: RecipeInProgressProps) {
 
   const { recipeDetails } = useFetch(mealOrDrink, recipeID, true, false);
 
-  const [recipesInProgress, setRecipesInProgress] = useState<any>({});
+  const [recipeInProgress, setRecipeInProgress] = useState<boolean[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [favorite, setFavorite] = useState(false);
 
@@ -79,23 +80,66 @@ function RecipeInProgress(props: RecipeInProgressProps) {
     toggleIsVisible();
   };
 
-  const handleIngredientChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const saveToLocalStorage = (ingredientsProgress: boolean[]) => {
+    const recipeInProgressLocalStore = getFromLocalStorage('inProgressRecipes')
+    || { meals: {}, drinks: {} };
+
+    const recipesData = recipeInProgressLocalStore[mealOrDrink];
+    const newRecipesData = { ...recipesData, [recipeID as string]: ingredientsProgress };
+
+    const newRecipeInProgressLocalStore = {
+      ...recipeInProgressLocalStore,
+      [mealOrDrink]: newRecipesData,
+    };
+
+    localStorage.setItem(
+      'inProgressRecipes',
+      JSON.stringify(newRecipeInProgressLocalStore),
+    );
+  };
+
+  const handleIngredientChange = (
+    ingredientID: number,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const isChecked = event.target.checked;
     const parentEl = event.target.parentElement;
-    if (isChecked) {
-      (parentEl as HTMLElement).style.textDecoration = 'line-through solid rgb(0, 0, 0)';
-    } else {
-      (parentEl as HTMLElement).style.textDecoration = 'none';
+    let ingredientsProgress: boolean[] = recipeInProgress;
+
+    if (ingredientsProgress.length === 0) {
+      ingredientsProgress = getIngredients().map((ingredient) => false);
     }
+
+    if (isChecked) {
+      // (parentEl as HTMLElement).style.textDecoration = 'line-through solid rgb(0, 0, 0)';
+      (parentEl as HTMLElement).classList.add(style.ingredientChecked);
+    } else {
+      (parentEl as HTMLElement).classList.remove(style.ingredientChecked);
+      // (parentEl as HTMLElement).style.textDecoration = 'none';
+    }
+
+    ingredientsProgress = ingredientsProgress
+      .map((ingredient, index) => (index === ingredientID ? isChecked : ingredient));
+
+    saveToLocalStorage(ingredientsProgress);
+    setRecipeInProgress(ingredientsProgress);
   };
 
   useEffect(() => {
-    const recipe = JSON.parse(localStorage.getItem('inProgressRecipes') as string);
-    setRecipesInProgress(recipe);
-    setFavorite(isFavorite(recipeID));
-  }, [recipeID]);
+    const recipeInProgressLocalStore = getFromLocalStorage('inProgressRecipes')
+    || { meals: {}, drinks: {} };
+    let ingredientsProgress = [];
 
-  const inProgress = isInProgress(mealOrDrink, recipeID);
+    const recipesData = recipeInProgressLocalStore[mealOrDrink];
+    if (Object.keys(recipesData).includes(recipeID as string)) {
+      ingredientsProgress = recipesData[recipeID as string];
+    }
+
+    setRecipeInProgress(ingredientsProgress);
+    setFavorite(isFavorite(recipeID));
+  }, [recipeID, mealOrDrink]);
+
+  // const inProgress = isInProgress(mealOrDrink, recipeID);
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
@@ -156,11 +200,14 @@ function RecipeInProgress(props: RecipeInProgressProps) {
             >
               <label
                 data-testid={ `${index}-ingredient-step` }
+                className={ (recipeInProgress[index]) ? style.ingredientChecked : '' }
                 htmlFor={ ingredient.trim() }
               >
                 <input
-                  onChange={ (e) => handleIngredientChange(e) }
+                  onChange={ (e) => handleIngredientChange(index, e) }
                   type="checkbox"
+                  checked={ (recipeInProgress.length === 0)
+                    ? false : recipeInProgress[index] }
                   name={ ingredient.trim() }
                   id={ ingredient.trim() }
                 />
