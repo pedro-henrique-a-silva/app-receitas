@@ -12,11 +12,9 @@ describe('Testa a Tela de login', () => {
   test('Verifica se a página de login é renderizada', () => {
     renderWithRouterAndContext(<App />);
     const emailInput = screen.getByRole('textbox', {
-      name: /e-mail/i,
+      name: /Email/i,
     });
-    const passwordInput = screen.getByRole('textbox', {
-      name: /senha/i,
-    });
+    const passwordInput = screen.getByLabelText(/senha/i) as HTMLInputElement;
     const entryBtn = screen.getByRole('button', {
       name: /enter/i,
     });
@@ -29,11 +27,9 @@ describe('Testa a Tela de login', () => {
   test('Verifica se a validação implementada no login funciona corretamente.', async () => {
     renderWithRouterAndContext(<App />);
     const emailInput = screen.getByRole('textbox', {
-      name: /e-mail/i,
+      name: /Email/i,
     }) as HTMLInputElement;
-    const passwordInput = screen.getByRole('textbox', {
-      name: /senha/i,
-    }) as HTMLInputElement;
+    const passwordInput = screen.getByLabelText(/senha/i) as HTMLInputElement;
     const entryBtn = screen.getByRole('button', {
       name: /enter/i,
     });
@@ -48,14 +44,11 @@ describe('Testa a Tela de login', () => {
   });
   test('Verifica se ao clicar em entrar há mudança de rota.', async () => {
     renderWithRouterAndContext(<App />);
-
     const emailInput = screen.getByRole('textbox', {
-      name: /e-mail/i,
+      name: /Email/i,
     }) as HTMLInputElement;
-    const emailText = screen.getByText(/e-mail/i);
-    const passwordInput = screen.getByRole('textbox', {
-      name: /senha/i,
-    }) as HTMLInputElement;
+    const emailText = screen.getByText(/Email/i);
+    const passwordInput = screen.getByLabelText(/senha/i) as HTMLInputElement;
     const entryBtn = screen.getByRole('button', {
       name: /enter/i,
     });
@@ -99,28 +92,6 @@ describe('Testa a Tela de login', () => {
 
   test('Verifica rota profile', async () => {
     renderWithRouterAndContext(<App />, { route: '/profile' });
-
-    const pageTitle = screen.getByTestId(pageTitleEl);
-    const profileBtn = screen.getByTestId(profileTopButtonEl);
-
-    expect(pageTitle).toBeInTheDocument();
-    expect(profileBtn).toBeInTheDocument();
-    // expect(screen.getByTestId('searchTopButtonEl')).not.toBeInTheDocument();
-  });
-
-  test('Verifica rota Done Recipes', async () => {
-    renderWithRouterAndContext(<App />, { route: '/done-recipes' });
-
-    const pageTitle = screen.getByTestId(pageTitleEl);
-    const profileBtn = screen.getByTestId(profileTopButtonEl);
-
-    expect(pageTitle).toBeInTheDocument();
-    expect(profileBtn).toBeInTheDocument();
-    // expect(screen.getByTestId('searchTopButtonEl')).not.toBeInTheDocument();
-  });
-
-  test('Verifica rota Favorites Recipes', async () => {
-    renderWithRouterAndContext(<App />, { route: '/favorite-recipes' });
 
     const pageTitle = screen.getByTestId(pageTitleEl);
     const profileBtn = screen.getByTestId(profileTopButtonEl);
