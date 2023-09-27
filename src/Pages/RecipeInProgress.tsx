@@ -90,7 +90,7 @@ function RecipeInProgress(props: RecipeInProgressProps) {
     let ingredientsProgress: boolean[] = recipeInProgress;
 
     if (ingredientsProgress.length === 0) {
-      ingredientsProgress = getIngredients().map((ingredient) => false);
+      ingredientsProgress = getIngredients().map(() => false);
     }
 
     if (isChecked) {
