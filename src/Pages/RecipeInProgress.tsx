@@ -76,7 +76,7 @@ function RecipeInProgress(props: RecipeInProgressProps) {
   const handleShareClick = () => {
     const { location: { origin, pathname } } = window;
     const url = `${origin}${pathname}`;
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(url.replace('/in-progress', ''));
     toggleIsVisible();
   };
 
@@ -223,7 +223,8 @@ function RecipeInProgress(props: RecipeInProgressProps) {
       </div>
       <button
         type="button"
-        className={ style.startRecipeBtn }
+        disabled={ recipeInProgress.some((ingredient) => ingredient === false) }
+        className={ style.finishRecipeBtn }
         data-testid="finish-recipe-btn"
       >
         Finish Recipe

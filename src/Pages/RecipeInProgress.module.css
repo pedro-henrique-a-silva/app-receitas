@@ -33,3 +33,37 @@
 .ingredientChecked {
   text-decoration: line-through solid rgb(0, 0, 0);
 }
+
+.finishRecipeBtn {
+  background-color: yellow;
+  border: 1px solid brown;
+  bottom: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  left: 50%;
+  padding: 0.5rem;
+  position: fixed;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+}
+
+.socialButtons {
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+  overflow: hidden;
+  position: absolute;
+  right: 10px;
+  top: 0;
+}
+
+.socialButtons button {
+  background: transparent;
+  border: none;
+}
+
+.socialButtons button img {
+  margin: 0.5rem;
+}
