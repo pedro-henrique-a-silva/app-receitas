@@ -1,63 +1,29 @@
-import React, { useState, useEffect } from 'react';
-
 type ButtonCardProps = {
-  type: 'meals' | 'drinks';
   onCategorySelected: (category: string) => void;
+  categories: any[];
 };
 
-function ButtonCard({ type, onCategorySelected }: ButtonCardProps) {
-  const [categories, setCategories] = useState([]);
-  const [limparFiltro, setLimparFiltro] = useState(false);
-
-  useEffect(() => {
-    // URL correta com base no tipo (meals ou drinks)
-    const url = type === 'meals'
-      ? 'https://www.themealdb.com/api/json/v1/1/list.php?c=list'
-      : 'https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list';
-
-    // solicitação HTTP usando fetch para obter as categorias
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Não foi possível obter as categorias.');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // Pegue as 5 primeiras categorias
-        const first5Categories = data[type]
-          .slice(0, 5).map((item: { strCategory: string }) => item.strCategory);
-        setCategories(first5Categories);
-      })
-      .catch((error) => {
-        console.error('Erro ao obter as categorias:', error);
-      });
-  }, [type]);
-
+function ButtonCard({ onCategorySelected, categories }: ButtonCardProps) {
   const handleClearFilter = () => {
-    onCategorySelected('All');
+    onCategorySelected('');
   };
+  console.log('renderizando button card');
 
-  useEffect(() => {
-    if (limparFiltro) {
-      onCategorySelected('All');
-      setLimparFiltro(false);
-    }
-  }, [limparFiltro, onCategorySelected]);
+  console.log(categories);
 
   return (
     <div>
       {categories.map((category, index) => (
         <button
           key={ index }
-          data-testid={ `${category}-category-filter` }
-          onClick={ () => onCategorySelected(category) }
+          data-testid={ `${category.strCategory}-category-filter` }
+          onClick={ () => onCategorySelected(category.strCategory) }
         >
-          {category}
+          {category.strCategory}
         </button>
       ))}
       <button
-        data-testid="All-category-filter"
+        data-testid="all-category-filter"
         onClick={ handleClearFilter }
       >
         All

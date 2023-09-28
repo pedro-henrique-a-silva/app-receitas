@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ButtonCard from '../components/ButtonCard';
 import Header from '../components/Header';
 import style from './Recipes.module.css';
-import useFetch from '../hooks/useFetch';
+import { fetchAllOrByCategory, fetchCategories } from '../utils/fetchAPi';
 
 type Recipe = {
   strMealThumb: string;
@@ -21,8 +21,9 @@ type RecipesProps = {
 
 function Recipes({ mealOrDrink }: RecipesProps) {
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [categorys, setCategorys] = useState<any[]>([]);
   const [isFilterSelected, setIsFilterSelected] = useState(false);
-  const { recipes } = useFetch(mealOrDrink, '', 5, selectedCategory);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const { recipeID, recipeInProgress } = useParams();
   const navigate = useNavigate();
 
@@ -45,10 +46,32 @@ function Recipes({ mealOrDrink }: RecipesProps) {
     navigate(route);
   };
 
+  useEffect(() => {
+    const getRecipes = async () => {
+      const recipesData = await fetchAllOrByCategory(mealOrDrink, selectedCategory);
+      if (recipesData) {
+        setRecipes(recipesData.splice(0, 12));
+      }
+    };
+    getRecipes();
+  }, [mealOrDrink, selectedCategory]);
+
+  useEffect(() => {
+    const getCategorys = async () => {
+      const categorysData = await fetchCategories(mealOrDrink);
+      if (categorysData) {
+        setCategorys(categorysData.splice(0, 6));
+      }
+    };
+
+    getCategorys();
+  }, [mealOrDrink]);
+
   const isMealOrDrink = (mealOrDrink === 'meals') || (mealOrDrink === 'drinks');
   const hasRecipeID = (!recipeID || recipeInProgress);
+  console.log('rendecizando recipe');
 
-  if (recipes.length === 0) return <p>Loading...</p>;
+  if (recipes.length === 0 || categorys.length === 0) return <p>Loading...</p>;
 
   return (
     <div>
@@ -61,12 +84,12 @@ function Recipes({ mealOrDrink }: RecipesProps) {
       )}
 
       <ButtonCard
-        type={ mealOrDrink }
+        categories={ categorys }
         onCategorySelected={ handleCategorySelected }
       />
       <h1>{mealOrDrink === 'meals' ? 'Comidas' : 'Bebidas'}</h1>
       <div>
-        {recipes.map((recipe, index) => (
+        {recipes.splice(0, 12).map((recipe, index) => (
           <button
             className={ style.cardImg }
             key={ index }

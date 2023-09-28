@@ -1,8 +1,16 @@
 import React from 'react';
 
-import { screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { act, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { vi } from 'vitest';
 import renderWithRouterAndContext from '../utils/render';
 import App from '../App';
+
+// import categorysMeal from './mocks/categorysMeal';
+// import categorysDrink from './mocks/categorysDrink';
+
+// import allMeals from './mocks/allMeals';
+// import allDrinks from './mocks/allDrinks';
+// import mealFiltered from './mocks/mealFiltered';
 
 const RECIPE_CARD_01_TESTID = '0-recipe-card';
 const RECIPE_CARD_02_TESTID = '1-recipe-card';
@@ -17,7 +25,14 @@ const RECIPE_CARD_10_TESTID = '9-recipe-card';
 const RECIPE_CARD_11_TESTID = '10-recipe-card';
 const RECIPE_CARD_12_TESTID = '11-recipe-card';
 
+const RECIPE_PHOTO_TESTID = 'recipe-photo';
+const RECIPE_TITLE_TESTID = 'recipe-title';
+const RECIPE_CATEGORY_TESTID = 'recipe-category';
+const SHARE_BTN_TESTID = 'share-btn';
+const FAVORITE_BTN_TESTID = 'favorite-btn';
+
 describe('Testando o Componente Recipes', () => {
+  afterEach(() => vi.restoreAllMocks());
   test('Testa se o componente renderiza corretamente', async () => {
     renderWithRouterAndContext(<App />, { route: '/meals' });
     await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
@@ -29,7 +44,12 @@ describe('Testando o Componente Recipes', () => {
     expect(profileBtn).toBeInTheDocument();
     expect(searchBtn).toBeInTheDocument();
   });
+
   test('Testa se as 12 receitas foram renderizadas', async () => {
+    // vi.spyOn(global, 'fetch').mockResolvedValue({
+    //   json: async () => allMeals,
+    // } as Response);
+
     renderWithRouterAndContext(<App />, { route: '/meals' });
 
     await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
@@ -59,5 +79,99 @@ describe('Testando o Componente Recipes', () => {
     expect(recipeCards10).toBeInTheDocument();
     expect(recipeCards11).toBeInTheDocument();
     expect(recipeCards12).toBeInTheDocument();
+  });
+  test('Testa se botão de filtro por categoria é limpar filtro funciona corretamente', async () => {
+    // vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+    //   json: async () => allMeals,
+    // } as Response).mockResolvedValueOnce({
+    //   json: async () => categorysMeal,
+    // } as Response).mockResolvedValueOnce({
+    //   json: async () => mealFiltered,
+    // } as Response)
+    //   .mockResolvedValueOnce({
+    //     json: async () => allMeals,
+    //   } as Response);
+
+    const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+
+    const recipeCardBefore1 = await screen.findByTestId('0-card-name');
+    const categoryBeef = await screen.findByTestId('Beef-category-filter');
+    expect(recipeCardBefore1.textContent).toBe('Corba');
+
+    await act(async () => {
+      await user.click(categoryBeef);
+    });
+
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    const recipeCardAfter1 = await screen.findByTestId('0-card-name');
+    expect(recipeCardAfter1.textContent).toBe('Beef and Mustard Pie');
+    // await new Promise((resolve) => { setTimeout(resolve, 1000); });
+
+    await act(async () => {
+      const clearFilter = await screen.findByTestId('all-category-filter');
+      await user.click(clearFilter);
+    });
+
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+
+    // await new Promise((resolve) => { setTimeout(resolve, 1000); });
+    expect(recipeCardBefore1.textContent).toBe('Corba');
+  });
+
+  test('Testando se ao clicar em um card de comida redireciona para a rota de detalhes', async () => {
+    // vi.spyOn(global, 'fetch').mockResolvedValue({
+    //   json: async () => allMeals,
+    // } as Response);
+
+    const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+
+    await act(async () => {
+      const recipeCard = await screen.findByTestId(RECIPE_CARD_01_TESTID);
+      await user.click(recipeCard);
+    });
+
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+
+    const recipePhoto = await screen.findByTestId(RECIPE_PHOTO_TESTID);
+    const recipeTitle = await screen.findByTestId(RECIPE_TITLE_TESTID);
+    const recipeCategory = await screen.findByTestId(RECIPE_CATEGORY_TESTID);
+    const shareBtn = await screen.findByTestId(SHARE_BTN_TESTID);
+    const favoriteBtn = await screen.findByTestId(FAVORITE_BTN_TESTID);
+
+    expect(recipePhoto).toBeInTheDocument();
+    expect(recipeTitle).toBeInTheDocument();
+    expect(recipeCategory).toBeInTheDocument();
+    expect(shareBtn).toBeInTheDocument();
+    expect(favoriteBtn).toBeInTheDocument();
+  });
+
+  test('Testando se ao clicar em um card de bebida redireciona para a rota de detalhes', async () => {
+    // vi.spyOn(global, 'fetch').mockResolvedValue({
+    //   json: async () => allDrinks,
+    // } as Response);
+
+    const { user } = renderWithRouterAndContext(<App />, { route: '/drinks' });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+
+    await act(async () => {
+      const recipeCard = await screen.findByTestId(RECIPE_CARD_01_TESTID);
+      await user.click(recipeCard);
+    });
+
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+
+    const recipePhoto = await screen.findByTestId(RECIPE_PHOTO_TESTID);
+    const recipeTitle = await screen.findByTestId(RECIPE_TITLE_TESTID);
+    const recipeCategory = await screen.findByTestId(RECIPE_CATEGORY_TESTID);
+    const shareBtn = await screen.findByTestId(SHARE_BTN_TESTID);
+    const favoriteBtn = await screen.findByTestId(FAVORITE_BTN_TESTID);
+
+    expect(recipePhoto).toBeInTheDocument();
+    expect(recipeTitle).toBeInTheDocument();
+    expect(recipeCategory).toBeInTheDocument();
+    expect(shareBtn).toBeInTheDocument();
+    expect(favoriteBtn).toBeInTheDocument();
   });
 });

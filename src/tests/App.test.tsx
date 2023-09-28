@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import renderWithRouterAndContext from '../utils/render';
@@ -64,6 +64,8 @@ describe('Testa a Tela de login', () => {
   test('Verifica se o header está sendo renderizado corretamente.', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
 
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+
     const pageTitle = screen.getByTestId(pageTitleEl);
     const profileBtn = screen.getByTestId(profileTopButtonEl);
     const searchBtn = screen.getByTestId(searchTopButtonEl);
@@ -80,6 +82,8 @@ describe('Testa a Tela de login', () => {
 
   test('Verifica rota de Drinks', async () => {
     renderWithRouterAndContext(<App />, { route: '/drinks' });
+
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
 
     const pageTitle = screen.getByTestId(pageTitleEl);
     const profileBtn = screen.getByTestId(profileTopButtonEl);
