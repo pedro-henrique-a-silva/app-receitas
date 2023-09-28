@@ -3,14 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Message from '../components/Message';
 import Carousel from '../components/Carousel';
 import style from './RecipeDetails.module.css';
-import whiteHeartIcon from '../images/whiteHeartIcon.svg';
-import blackHeartIcon from '../images/blackHeartIcon.svg';
-import shareIcon from '../images/shareIcon.svg';
-import useFetch from '../hooks/useFetch';
 import {
   isFavorite,
   isInProgress,
 } from '../utils/utilsLocalStorage';
+import { fetchDetails } from '../utils/fetchAPi';
+import RecipeCover from '../components/RecipeCover';
 
 type RecipeDetailsProps = {
   mealOrDrink: 'meals' | 'drinks';
@@ -21,8 +19,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
   const { recipeID } = useParams();
   const navigate = useNavigate();
 
-  const {
-    recipeDetails } = useFetch(mealOrDrink, recipeID, true, false);
+  const [recipeDetails, setRecipeDetails] = useState<any>({});
 
   const [isVisible, setIsVisible] = useState(false);
   const [favorite, setFavorite] = useState(false);
@@ -88,59 +85,32 @@ function RecipeDetails(props: RecipeDetailsProps) {
   };
 
   useEffect(() => {
+    const getDetails = async () => {
+      const details = await fetchDetails(mealOrDrink, recipeID);
+      if (details) {
+        setRecipeDetails(details[0]);
+      }
+    };
+    getDetails();
     setFavorite(isFavorite(recipeID));
-  }, [recipeID]);
+  }, [recipeID, mealOrDrink]);
 
   const inProgress = isInProgress(mealOrDrink, recipeID);
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
+  console.log(recipeDetails);
+
   return (
     <>
       {(isVisible) && <Message toggleIsVisible={ toggleIsVisible } />}
-      <div className={ style.recipeCoverWrapper }>
-        <img
-          data-testid="recipe-photo"
-          className={ style.recipeThumb }
-          src={ recipeDetails?.strMealThumb || recipeDetails?.strDrinkThumb }
-          alt="recipeThumb"
-        />
-        <h1
-          className={ style.recipeTitle }
-          data-testid="recipe-title"
-        >
-          {recipeDetails?.strMeal || recipeDetails?.strDrink}
-
-        </h1>
-        <h3
-          className={ style.recipeCategory }
-          data-testid="recipe-category"
-        >
-          {
-          (mealOrDrink === 'meals')
-            ? recipeDetails?.strCategory
-            : recipeDetails?.strAlcoholic
-          }
-
-        </h3>
-        <div className={ style.socialButtons }>
-          <button
-            data-testid="share-btn"
-            onClick={ handleShareClick }
-          >
-            <img src={ shareIcon } alt="share Icon" />
-          </button>
-          <button
-            onClick={ () => handleFavoriteClick(recipeDetails) }
-          >
-            <img
-              data-testid="favorite-btn"
-              src={ (favorite) ? blackHeartIcon : whiteHeartIcon }
-              alt="favorite Icon"
-            />
-          </button>
-        </div>
-      </div>
+      <RecipeCover
+        mealOrDrink={ mealOrDrink }
+        favorite={ favorite }
+        handleShareClick={ handleShareClick }
+        handleFavoriteClick={ handleFavoriteClick }
+        recipeDetails={ recipeDetails }
+      />
 
       <div>
         <h3>Ingredients</h3>

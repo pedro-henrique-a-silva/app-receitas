@@ -1,35 +1,3 @@
-.recipeThumb {
-  width: 200px;
-}
-
-.recipeCoverWrapper {
-  align-items: center;
-  color: yellow;
-  display: flex;
-  height: 200px;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-}
-
-.recipeCoverWrapper > img {
-  object-fit: cover;
-  position: absolute;
-  width: 100%;
-  z-index: -1;
-}
-
-.recipeTitle {
-  font-size: 1.2rem;
-}
-
-.recipeCategory {
-  left: 10px;
-  position: absolute;
-  top: 10px;
-}
-
 .recipeVideo {
   display: flex;
   justify-content: center;
@@ -52,24 +20,4 @@
   text-align: center;
   text-transform: uppercase;
   transform: translateX(-50%);
-}
-
-.socialButtons {
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
-  margin: 1rem 0;
-  overflow: hidden;
-  position: absolute;
-  right: 10px;
-  top: 0;
-}
-
-.socialButtons button {
-  background: transparent;
-  border: none;
-}
-
-.socialButtons button img {
-  margin: 0.5rem;
 }
