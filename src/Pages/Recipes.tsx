@@ -22,7 +22,6 @@ type RecipesProps = {
 function Recipes({ mealOrDrink }: RecipesProps) {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categorys, setCategorys] = useState<any[]>([]);
-  const [isFilterSelected, setIsFilterSelected] = useState(false);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const { recipeID, recipeInProgress } = useParams();
   const navigate = useNavigate();
@@ -30,13 +29,7 @@ function Recipes({ mealOrDrink }: RecipesProps) {
   // Função para lidar com a seleção de categoria
   const handleCategorySelected = (category: string) => {
     // Se o filtro estiver selecionado, deselecione-o
-    if (isFilterSelected) {
-      setSelectedCategory('');
-      setIsFilterSelected(false);
-    } else {
-      setSelectedCategory(category);
-      setIsFilterSelected(true);
-    }
+    setSelectedCategory((prev) => (category === prev ? '' : category));
   };
 
   const handleRecipeClick = (recipe: Recipe) => {
@@ -50,9 +43,10 @@ function Recipes({ mealOrDrink }: RecipesProps) {
     const getRecipes = async () => {
       const recipesData = await fetchAllOrByCategory(mealOrDrink, selectedCategory);
       if (recipesData) {
-        setRecipes(recipesData.splice(0, 12));
+        setRecipes(recipesData.slice(0, 12));
       }
     };
+
     getRecipes();
   }, [mealOrDrink, selectedCategory]);
 
@@ -60,16 +54,15 @@ function Recipes({ mealOrDrink }: RecipesProps) {
     const getCategorys = async () => {
       const categorysData = await fetchCategories(mealOrDrink);
       if (categorysData) {
-        setCategorys(categorysData.splice(0, 6));
+        setCategorys(categorysData.slice(0, 5));
       }
     };
 
     getCategorys();
-  }, [mealOrDrink]);
+  }, []);
 
   const isMealOrDrink = (mealOrDrink === 'meals') || (mealOrDrink === 'drinks');
   const hasRecipeID = (!recipeID || recipeInProgress);
-  console.log('rendecizando recipe');
 
   if (recipes.length === 0 || categorys.length === 0) return <p>Loading...</p>;
 

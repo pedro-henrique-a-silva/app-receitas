@@ -23,7 +23,7 @@ function ButtonCard({ onCategorySelected, categories }: ButtonCardProps) {
         </button>
       ))}
       <button
-        data-testid="all-category-filter"
+        data-testid="All-category-filter"
         onClick={ handleClearFilter }
       >
         All

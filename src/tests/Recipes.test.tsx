@@ -109,7 +109,7 @@ describe('Testando o Componente Recipes', () => {
     // await new Promise((resolve) => { setTimeout(resolve, 1000); });
 
     await act(async () => {
-      const clearFilter = await screen.findByTestId('all-category-filter');
+      const clearFilter = await screen.findByTestId('All-category-filter');
       await user.click(clearFilter);
     });
 
