@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
-import { Meal, fetchMealsByFirstLetter,
-  fetchMealsByIngredient, fetchMealsByName } from '../utils/fetchAPi';
+import {
+  fetchMealsByFirstLetter,
+  fetchMealsByIngredient,
+  fetchMealsByName,
+  fetchDrinksByFirstLetter,
+  fetchDrinksByIngredient,
+  fetchDrinksByName,
+} from '../utils/fetchAPi';
 
-function SearchBar() {
+interface SearchBarProps {
+  isOnMealsPage: boolean;
+}
+
+interface MealData {
+  idMeal: string;
+  strMeal: string;
+}
+
+function SearchBar({ isOnMealsPage }: SearchBarProps) {
   const [searchType, setSearchType] = useState('Ingredient');
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<MealData[]>([]);
 
   const handleSearchTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchType(event.target.value);
@@ -22,18 +37,32 @@ function SearchBar() {
       return;
     }
 
-    let data = [];
+    let data: MealData[] = [];
+
+    const mealsApi = {
+      Ingredient: fetchMealsByIngredient,
+      Name: fetchMealsByName,
+      'First letter': fetchMealsByFirstLetter,
+    };
+
+    const drinksApi = {
+      Ingredient: fetchDrinksByIngredient,
+      Name: fetchDrinksByName,
+      'First letter': fetchDrinksByFirstLetter,
+    };
+
+    const api = isOnMealsPage ? mealsApi : drinksApi;
 
     switch (searchType) {
       case 'Ingredient':
-        data = await fetchMealsByIngredient(searchTerm);
+        data = await api.Ingredient(searchTerm);
         break;
       case 'Name':
-        data = await fetchMealsByName(searchTerm);
+        data = await api.Name(searchTerm);
         break;
       case 'First letter':
         if (searchTerm.length === 1) {
-          data = await fetchMealsByFirstLetter(searchTerm);
+          data = await api['First letter'](searchTerm);
         } else {
           window.alert('Your search must have only 1 (one) character');
         }

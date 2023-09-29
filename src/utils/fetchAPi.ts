@@ -5,6 +5,11 @@ export type UrlType = {
   [key: string]: string;
 };
 
+interface MealData {
+  idMeal: string;
+  strMeal: string;
+}
+
 export const baseURL: UrlType = {
   meals: MEALS_API_BASE,
   drinks: DRINKS_API_BASE,
@@ -33,20 +38,35 @@ export const fetchCategories = async (mealOrDrink: string) => {
   return fetchApi(url);
 };
 
-// Função para buscar por ingrediente
-export const fetchMealsByIngredient = async (ingredient: string) => {
+export const fetchMealsByIngredient = async (ingredient: string): Promise<MealData[]> => {
   const url = `${MEALS_API_BASE}filter.php?i=${ingredient}`;
   return fetchApi(url);
 };
 
-// Função para buscar por nome
-export const fetchMealsByName = async (name: string) => {
+export const fetchMealsByName = async (name: string): Promise<MealData[]> => {
   const url = `${MEALS_API_BASE}search.php?s=${name}`;
   return fetchApi(url);
 };
 
-// Função para buscar por primeira letra
-export const fetchMealsByFirstLetter = async (firstLetter: string) => {
+export const fetchMealsByFirstLetter = async (firstLetter: string)
+: Promise<MealData[]> => {
   const url = `${MEALS_API_BASE}search.php?f=${firstLetter}`;
+  return fetchApi(url);
+};
+
+export const fetchDrinksByIngredient = async (ingredient: string)
+: Promise<MealData[]> => {
+  const url = `${DRINKS_API_BASE}filter.php?i=${ingredient}`;
+  return fetchApi(url);
+};
+
+export const fetchDrinksByName = async (name: string): Promise<MealData[]> => {
+  const url = `${DRINKS_API_BASE}search.php?s=${name}`;
+  return fetchApi(url);
+};
+
+export const fetchDrinksByFirstLetter = async (firstLetter: string)
+: Promise<MealData[]> => {
+  const url = `${DRINKS_API_BASE}search.php?f=${firstLetter}`;
   return fetchApi(url);
 };
