@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import React, { useState } from 'react';
 import { fetchMealsByFirstLetter,
   fetchMealsByIngredient, fetchMealsByName } from '../utils/fetchAPi';
@@ -16,7 +17,6 @@ function SearchBar() {
   };
 
   const handleSearch = async () => {
-    // eslint-disable-next-line sonarjs/no-duplicate-string
     if (searchType === 'First letter' && searchTerm.length !== 1) {
       window.alert('Your search must have only 1 (one) character');
       return;
