@@ -1,14 +1,18 @@
 const MEALS_API_BASE = 'https://www.themealdb.com/api/json/v1/1/';
 const DRINKS_API_BASE = 'https://www.thecocktaildb.com/api/json/v1/1/';
 
-type UrlType = {
+export type UrlType = {
   [key: string]: string;
 };
 
-const baseURL: UrlType = {
+export interface MealData {
+  idMeal: string;
+  strMeal: string;
+}
+
+export const baseURL: UrlType = {
   meals: MEALS_API_BASE,
   drinks: DRINKS_API_BASE,
-
 };
 
 export const fetchApi = async (url: string) => {
@@ -31,5 +35,38 @@ export const fetchDetails = async (mealOrDrink: string, recipeID: string | undef
 
 export const fetchCategories = async (mealOrDrink: string) => {
   const url = `${baseURL[mealOrDrink]}list.php?c=list`;
+  return fetchApi(url);
+};
+
+export const fetchMealsByIngredient = async (ingredient: string): Promise<MealData[]> => {
+  const url = `${MEALS_API_BASE}filter.php?i=${ingredient}`;
+  return fetchApi(url);
+};
+
+export const fetchMealsByName = async (name: string): Promise<MealData[]> => {
+  const url = `${MEALS_API_BASE}search.php?s=${name}`;
+  return fetchApi(url);
+};
+
+export const fetchMealsByFirstLetter = async (firstLetter: string)
+: Promise<MealData[]> => {
+  const url = `${MEALS_API_BASE}search.php?f=${firstLetter}`;
+  return fetchApi(url);
+};
+
+export const fetchDrinksByIngredient = async (ingredient: string)
+: Promise<MealData[]> => {
+  const url = `${DRINKS_API_BASE}filter.php?i=${ingredient}`;
+  return fetchApi(url);
+};
+
+export const fetchDrinksByName = async (name: string): Promise<MealData[]> => {
+  const url = `${DRINKS_API_BASE}search.php?s=${name}`;
+  return fetchApi(url);
+};
+
+export const fetchDrinksByFirstLetter = async (firstLetter: string)
+: Promise<MealData[]> => {
+  const url = `${DRINKS_API_BASE}search.php?f=${firstLetter}`;
   return fetchApi(url);
 };
