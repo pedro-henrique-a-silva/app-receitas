@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import React, { useState } from 'react';
 import { fetchMealsByFirstLetter,
   fetchMealsByIngredient, fetchMealsByName } from '../utils/fetchAPi';
@@ -16,8 +15,12 @@ function SearchBar() {
     setSearchTerm(event.target.value);
   };
 
+  const SEARCH_TYPE_INGREDIENT = 'Ingredient';
+  const SEARCH_TYPE_NAME = 'Name';
+  const SEARCH_TYPE_FIRST_LETTER = 'First letter';
+
   const handleSearch = async () => {
-    if (searchType === 'First letter' && searchTerm.length !== 1) {
+    if (searchType === SEARCH_TYPE_FIRST_LETTER && searchTerm.length !== 1) {
       window.alert('Your search must have only 1 (one) character');
       return;
     }
@@ -25,13 +28,13 @@ function SearchBar() {
     let data = [];
 
     switch (searchType) {
-      case 'Ingredient':
+      case SEARCH_TYPE_INGREDIENT:
         data = await fetchMealsByIngredient(searchTerm);
         break;
-      case 'Name':
+      case SEARCH_TYPE_NAME:
         data = await fetchMealsByName(searchTerm);
         break;
-      case 'First letter':
+      case SEARCH_TYPE_FIRST_LETTER:
         if (searchTerm.length === 1) {
           data = await fetchMealsByFirstLetter(searchTerm);
         } else {
