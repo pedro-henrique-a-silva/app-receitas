@@ -51,7 +51,7 @@ function FavoriteRecipes() {
   return (
     <>
       {(isVisible) && <Message toggleIsVisible={ toggleIsVisible } />}
-      <Header title="Receitas Favoritas" />
+      <Header title="Favorite Recipes" />
       <section>
         <button
           onClick={ () => handleFilter('') }
