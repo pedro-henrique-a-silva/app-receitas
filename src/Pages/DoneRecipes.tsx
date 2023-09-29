@@ -1,11 +1,11 @@
 import React from 'react';
 import Footer from './Footer';
-import Profile from './Profile';
+import Header from '../components/Header';
 
 function DoneRecipes() {
   return (
     <>
-      <Profile />
+      <Header title="Done Recipes" />
       <h1>categorias</h1>
       <Footer />
     </>
