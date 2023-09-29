@@ -1,26 +1,11 @@
 import React, { useState } from 'react';
-import {
-  fetchMealsByFirstLetter,
-  fetchMealsByIngredient,
-  fetchMealsByName,
-  fetchDrinksByFirstLetter,
-  fetchDrinksByIngredient,
-  fetchDrinksByName,
-} from '../utils/fetchAPi';
+import { fetchMealsByFirstLetter,
+  fetchMealsByIngredient, fetchMealsByName } from '../utils/fetchAPi';
 
-interface SearchBarProps {
-  isOnMealsPage: boolean;
-}
-
-interface MealData {
-  idMeal: string;
-  strMeal: string;
-}
-
-function SearchBar({ isOnMealsPage }: SearchBarProps) {
+function SearchBar() {
   const [searchType, setSearchType] = useState('Ingredient');
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<MealData[]>([]);
+  const [searchResults, setSearchResults] = useState([]);
 
   const handleSearchTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchType(event.target.value);
@@ -37,32 +22,18 @@ function SearchBar({ isOnMealsPage }: SearchBarProps) {
       return;
     }
 
-    let data: MealData[] = [];
-
-    const mealsApi = {
-      Ingredient: fetchMealsByIngredient,
-      Name: fetchMealsByName,
-      'First letter': fetchMealsByFirstLetter,
-    };
-
-    const drinksApi = {
-      Ingredient: fetchDrinksByIngredient,
-      Name: fetchDrinksByName,
-      'First letter': fetchDrinksByFirstLetter,
-    };
-
-    const api = isOnMealsPage ? mealsApi : drinksApi;
+    let data = [];
 
     switch (searchType) {
       case 'Ingredient':
-        data = await api.Ingredient(searchTerm);
+        data = await fetchMealsByIngredient(searchTerm);
         break;
       case 'Name':
-        data = await api.Name(searchTerm);
+        data = await fetchMealsByName(searchTerm);
         break;
       case 'First letter':
         if (searchTerm.length === 1) {
-          data = await api['First letter'](searchTerm);
+          data = await fetchMealsByFirstLetter(searchTerm);
         } else {
           window.alert('Your search must have only 1 (one) character');
         }

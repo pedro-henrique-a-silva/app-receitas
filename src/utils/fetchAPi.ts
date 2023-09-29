@@ -5,7 +5,7 @@ export type UrlType = {
   [key: string]: string;
 };
 
-interface MealData {
+export interface MealData {
   idMeal: string;
   strMeal: string;
 }
