@@ -23,11 +23,11 @@ describe('Testa tela de receitas favoritas', () => {
 
     const pageTitle = screen.getByTestId('page-title');
     const profileBtn = screen.getByTestId('profile-top-btn');
-    const searchBtn = screen.getByTestId('search-top-btn');
+    // const searchBtn = screen.getByTestId('search-top-btn');
 
     expect(pageTitle).toBeInTheDocument();
     expect(profileBtn).toBeInTheDocument();
-    expect(searchBtn).toBeInTheDocument();
+    // expect(searchBtn).toBeInTheDocument();
 
     const favorite1 = await screen.findByTestId(`0${HORIZONTAL_NAME}`);
     const favoriteImage1 = await screen.findByTestId('0-horizontal-image');

@@ -57,10 +57,14 @@ function Recipes({ mealOrDrink }: RecipesProps) {
       if (categorysData) {
         setCategorys(categorysData.slice(0, 5));
       }
+
+      if (!categorysData.slice(0, 5).includes(selectedCategory)) {
+        setSelectedCategory('');
+      }
     };
 
     getCategorys();
-  }, []);
+  }, [mealOrDrink]);
 
   const isMealOrDrink = (mealOrDrink === 'meals') || (mealOrDrink === 'drinks');
   const hasRecipeID = (!recipeID || recipeInProgress);
