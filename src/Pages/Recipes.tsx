@@ -4,6 +4,7 @@ import ButtonCard from '../components/ButtonCard';
 import Header from '../components/Header';
 import style from './Recipes.module.css';
 import { fetchAllOrByCategory, fetchCategories } from '../utils/fetchAPi';
+import Footer from './Footer';
 
 type Recipe = {
   strMealThumb: string;
@@ -101,6 +102,7 @@ function Recipes({ mealOrDrink }: RecipesProps) {
           </button>
         ))}
       </div>
+      <Footer />
     </div>
   );
 }
