@@ -1,6 +1,7 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import React, { useState } from 'react';
-import { fetchMealsByFirstLetter,
-  fetchMealsByIngredient, fetchMealsByName } from '../utils/fetchAPi';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { MEALS_API_BASE, DRINKS_API_BASE, fetchApi } from '../utils/fetchAPi';
 
 function SearchBar() {
   const [searchType, setSearchType] = useState('Ingredient');
@@ -15,38 +16,79 @@ function SearchBar() {
     setSearchTerm(event.target.value);
   };
 
-  const SEARCH_TYPE_INGREDIENT = 'Ingredient';
-  const SEARCH_TYPE_NAME = 'Name';
-  const SEARCH_TYPE_FIRST_LETTER = 'First letter';
+  const navigate: NavigateFunction = useNavigate();
 
-  const handleSearch = async () => {
-    if (searchType === SEARCH_TYPE_FIRST_LETTER && searchTerm.length !== 1) {
-      window.alert('Your search must have only 1 (one) character');
+  async function handleSearch(): Promise<void> {
+    const isValid = validateSearch();
+
+    if (!isValid) {
       return;
     }
 
-    let data = [];
+    const apiEndpoint = buildApiEndpoint();
+
+    if (apiEndpoint) {
+      const data = await fetchData(apiEndpoint);
+      setSearchResults(data);
+
+      if (data.length === 1) {
+        const recipeId = data[0].idMeal || data[0].idDrink;
+        redirectToRecipeDetails(recipeId);
+      }
+    } else {
+      // Handle invalid searchType
+    }
+  }
+
+  function validateSearch(): boolean {
+    if (searchType === 'First letter' && searchTerm.length !== 1) {
+      window.alert('Your search must have only 1 (one) character');
+      return false;
+    }
+    return true;
+  }
+
+  function buildApiEndpoint(): string {
+    let apiEndpoint = '';
+
+    const isDrinksPage = window.location.pathname.includes('/drinks');
 
     switch (searchType) {
-      case SEARCH_TYPE_INGREDIENT:
-        data = await fetchMealsByIngredient(searchTerm);
+      case 'Ingredient':
+        apiEndpoint = isDrinksPage ? DRINKS_API_BASE : MEALS_API_BASE;
+        apiEndpoint += `filter.php?i=${searchTerm}`;
         break;
-      case SEARCH_TYPE_NAME:
-        data = await fetchMealsByName(searchTerm);
+      case 'Name':
+        apiEndpoint = isDrinksPage ? DRINKS_API_BASE : MEALS_API_BASE;
+        apiEndpoint += `search.php?s=${searchTerm}`;
         break;
-      case SEARCH_TYPE_FIRST_LETTER:
+      case 'First letter':
         if (searchTerm.length === 1) {
-          data = await fetchMealsByFirstLetter(searchTerm);
-        } else {
-          window.alert('Your search must have only 1 (one) character');
+          apiEndpoint = isDrinksPage ? DRINKS_API_BASE : MEALS_API_BASE;
+          apiEndpoint += `search.php?f=${searchTerm}`;
         }
         break;
       default:
         break;
     }
 
-    setSearchResults(data);
-  };
+    return apiEndpoint;
+  }
+
+  async function fetchData(apiEndpoint: string): Promise<any[]> {
+    try {
+      return await fetchApi(apiEndpoint);
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
+  function redirectToRecipeDetails(recipeId: string): void {
+    const isDrinksPage = window.location.pathname.includes('/drinks');
+    const routePrefix: 'drinks' | 'meals' = isDrinksPage ? 'drinks' : 'meals';
+    navigate(`/${routePrefix}/${recipeId}`);
+  }
 
   return (
     <div>
