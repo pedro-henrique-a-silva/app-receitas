@@ -140,11 +140,20 @@ function SearchBar() {
       </button>
       <div>
         <h2>Search Results</h2>
-        <ul>
-          {searchResults.map((meal) => (
-            <li key={ meal.idMeal }>{ meal.strMeal }</li>
+        <div>
+          {searchResults.slice(0, 12).map((recipe, index) => (
+            <div key={ index } data-testid={ `${index}-recipe-card` }>
+              <img
+                src={ recipe.strMealThumb || recipe.strDrinkThumb }
+                alt={ recipe.strMeal || recipe.strDrink }
+                data-testid={ `${index}-card-img` }
+              />
+              <p data-testid={ `${index}-card-name` }>
+                { recipe.strMeal || recipe.strDrink }
+              </p>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
