@@ -1,7 +1,8 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import React, { useState } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { MEALS_API_BASE, DRINKS_API_BASE, fetchApi } from '../utils/fetchAPi';
+
+const FIRST_LETTER_SEARCH_TYPE = 'First letter';
 
 function SearchBar() {
   const [searchType, setSearchType] = useState('Ingredient');
@@ -41,7 +42,7 @@ function SearchBar() {
   }
 
   function validateSearch(): boolean {
-    if (searchType === 'First letter' && searchTerm.length !== 1) {
+    if (searchType === FIRST_LETTER_SEARCH_TYPE && searchTerm.length !== 1) {
       window.alert('Your search must have only 1 (one) character');
       return false;
     }
@@ -62,7 +63,7 @@ function SearchBar() {
         apiEndpoint = isDrinksPage ? DRINKS_API_BASE : MEALS_API_BASE;
         apiEndpoint += `search.php?s=${searchTerm}`;
         break;
-      case 'First letter':
+      case FIRST_LETTER_SEARCH_TYPE:
         if (searchTerm.length === 1) {
           apiEndpoint = isDrinksPage ? DRINKS_API_BASE : MEALS_API_BASE;
           apiEndpoint += `search.php?f=${searchTerm}`;
