@@ -83,12 +83,7 @@ function SearchBar(props: SearchBarProps) {
   }
 
   async function fetchData(apiEndpoint: string): Promise<any[]> {
-    try {
-      return await fetchApi(apiEndpoint);
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
+    return fetchApi(apiEndpoint);
   }
 
   function redirectToRecipeDetails(recipeId: string): void {

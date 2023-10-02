@@ -6,12 +6,10 @@ import SearchBar from './SearchBar';
 
 type HeaderProp = {
   title: string;
-  updateRecipes: (recipesData: any[]) => void;
+  updateRecipes?: (recipesData: any[]) => void;
 };
 
-function Header(props: HeaderProp) {
-  const { title, updateRecipes } = props;
-
+function Header({ title, updateRecipes = () => { } }: HeaderProp) {
   const [toggleSearchBar, setToggleSearchBar] = useState(false);
 
   const rotasSemHeader = ['profile', 'done recipes', 'favorite recipes'];
