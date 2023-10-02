@@ -40,11 +40,15 @@ function Recipes({ mealOrDrink }: RecipesProps) {
     navigate(route);
   };
 
+  const updateRecipes = (recipesData: any[]) => {
+    setRecipes((prev) => recipesData || prev);
+  };
+
   useEffect(() => {
     const getRecipes = async () => {
       const recipesData = await fetchAllOrByCategory(mealOrDrink, selectedCategory);
       if (recipesData) {
-        setRecipes(recipesData.slice(0, 12));
+        updateRecipes(recipesData.slice(0, 12));
       }
     };
 
@@ -75,6 +79,7 @@ function Recipes({ mealOrDrink }: RecipesProps) {
     <div>
       {isMealOrDrink && hasRecipeID && (
         <Header
+          updateRecipes={ updateRecipes }
           title={
           mealOrDrink.charAt(0).toUpperCase() + mealOrDrink.slice(1)
           }

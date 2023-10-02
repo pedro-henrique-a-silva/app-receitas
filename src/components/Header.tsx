@@ -6,10 +6,11 @@ import SearchBar from './SearchBar';
 
 type HeaderProp = {
   title: string;
+  updateRecipes: (recipesData: any[]) => void;
 };
 
 function Header(props: HeaderProp) {
-  const { title } = props;
+  const { title, updateRecipes } = props;
 
   const [toggleSearchBar, setToggleSearchBar] = useState(false);
 
@@ -43,7 +44,7 @@ function Header(props: HeaderProp) {
           </NavLink>
         </div>
       </header>
-      {toggleSearchBar && <SearchBar />}
+      {toggleSearchBar && <SearchBar updateRecipes={ updateRecipes } />}
       <div>
         <h1 data-testid="page-title">{title}</h1>
       </div>
