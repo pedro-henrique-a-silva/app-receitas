@@ -1,28 +1,18 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Message from '../components/Message';
 import Carousel from '../components/Carousel';
 import style from './RecipeDetails.module.css';
-import whiteHeartIcon from '../images/whiteHeartIcon.svg';
-import blackHeartIcon from '../images/blackHeartIcon.svg';
-import shareIcon from '../images/shareIcon.svg';
+import {
+  isFavorite,
+  isInProgress,
+} from '../utils/utilsLocalStorage';
+import { fetchDetails } from '../utils/fetchAPi';
+import RecipeCover from '../components/RecipeCover';
 
 type RecipeDetailsProps = {
   mealOrDrink: 'meals' | 'drinks';
 };
-
-const mealsApiBase = 'https://www.themealdb.com/api/json/v1/1/';
-const drinksApiBase = 'https://www.thecocktaildb.com/api/json/v1/1/';
-
-// https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={id-da-receita}.
-// https://www.thecocktaildb.com/api/json/v1/1/search.php?s=.
-
-// https://www.themealdb.com/api/json/v1/1/lookup.php?i={id-da-receita}.
-// https://www.themealdb.com/api/json/v1/1/search.php?s=.
-
-// strCategory
-// strMealThumb
-// strMeal
 
 function RecipeDetails(props: RecipeDetailsProps) {
   const { mealOrDrink } = props;
@@ -30,6 +20,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
   const navigate = useNavigate();
 
   const [recipeDetails, setRecipeDetails] = useState<any>({});
+
   const [isVisible, setIsVisible] = useState(false);
   const [favorite, setFavorite] = useState(false);
 
@@ -39,29 +30,12 @@ function RecipeDetails(props: RecipeDetailsProps) {
     .map((values, index) => (`${values[1]} ${recipeDetails[`strMeasure${index + 1}`]
     || ''}`));
 
-  const getFromLocalStorage = (key: string) => JSON
-    .parse(localStorage.getItem(key) as string);
-
-  const isInProgress = () => {
-    const { meals, drinks } = getFromLocalStorage('inProgressRecipes')
-    || { meals: {}, drinks: {} };
-    const recipesInProgress = mealOrDrink === 'meals' ? meals : drinks;
-    return recipesInProgress[recipeID as string];
-  };
-
-  const isFavorite = useCallback(() => {
-    const favorites = getFromLocalStorage('favoriteRecipes') || [];
-    return favorites.find((recipe: any) => recipe.id === recipeID) !== undefined;
-  }, [recipeID]);
-
   const toggleIsVisible = () => {
     setIsVisible(!isVisible);
   };
 
-  const handleClickStartRecipe = (inProgress: boolean) => {
-    if (!inProgress) {
-      navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
-    }
+  const handleClickStartRecipe = () => {
+    navigate(`/${mealOrDrink}/${recipeID}/in-progress`);
   };
 
   const handleFavoriteClick = (recipeData: any) => {
@@ -87,7 +61,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
       .parse(localStorage.getItem('favoriteRecipes') as string)
     || [];
 
-    if (isFavorite()) {
+    if (isFavorite(recipeID)) {
       const newFavoriteRecipes = recipesLocalStorage
         .filter((recipe: any) => recipe.id !== recipeID);
 
@@ -111,72 +85,32 @@ function RecipeDetails(props: RecipeDetailsProps) {
   };
 
   useEffect(() => {
-    const getData = async () => {
-      const DetailsUrl = mealOrDrink === 'meals' ? mealsApiBase : drinksApiBase;
-
-      const detailsResponse = await fetch(`${DetailsUrl}lookup.php?i=${recipeID}`);
-
-      const details = await detailsResponse.json();
-
-      setRecipeDetails(details.meals?.[0] || details.drinks?.[0]);
-      setFavorite(isFavorite());
+    const getDetails = async () => {
+      const details = await fetchDetails(mealOrDrink, recipeID);
+      if (details) {
+        setRecipeDetails(details[0]);
+      }
     };
+    getDetails();
+    setFavorite(isFavorite(recipeID));
+  }, [recipeID, mealOrDrink]);
 
-    getData();
-  }, [mealOrDrink, recipeID, isFavorite]);
-
-  const inProgress = isInProgress();
-
-  // const favorite = isFavorite();
+  const inProgress = isInProgress(mealOrDrink, recipeID);
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
+
+  console.log(recipeDetails);
 
   return (
     <>
       {(isVisible) && <Message toggleIsVisible={ toggleIsVisible } />}
-      <div className={ style.recipeCoverWrapper }>
-        <img
-          data-testid="recipe-photo"
-          className={ style.recipeThumb }
-          src={ recipeDetails?.strMealThumb || recipeDetails?.strDrinkThumb }
-          alt="recipeThumb"
-        />
-        <h1
-          className={ style.recipeTitle }
-          data-testid="recipe-title"
-        >
-          {recipeDetails?.strMeal || recipeDetails?.strDrink}
-
-        </h1>
-        <h3
-          className={ style.recipeCategory }
-          data-testid="recipe-category"
-        >
-          {
-          (mealOrDrink === 'meals')
-            ? recipeDetails?.strCategory
-            : recipeDetails?.strAlcoholic
-          }
-
-        </h3>
-        <div className={ style.socialButtons }>
-          <button
-            data-testid="share-btn"
-            onClick={ handleShareClick }
-          >
-            <img src={ shareIcon } alt="share Icon" />
-          </button>
-          <button
-            onClick={ () => handleFavoriteClick(recipeDetails) }
-          >
-            <img
-              data-testid="favorite-btn"
-              src={ (favorite) ? blackHeartIcon : whiteHeartIcon }
-              alt="favorite Icon"
-            />
-          </button>
-        </div>
-      </div>
+      <RecipeCover
+        mealOrDrink={ mealOrDrink }
+        favorite={ favorite }
+        handleShareClick={ handleShareClick }
+        handleFavoriteClick={ handleFavoriteClick }
+        recipeDetails={ recipeDetails }
+      />
 
       <div>
         <h3>Ingredients</h3>
@@ -209,7 +143,7 @@ function RecipeDetails(props: RecipeDetailsProps) {
       <Carousel mealOrDrink={ mealOrDrink } />
       <button
         type="button"
-        onClick={ () => handleClickStartRecipe(inProgress) }
+        onClick={ () => handleClickStartRecipe() }
         className={ style.startRecipeBtn }
         data-testid="start-recipe-btn"
       >

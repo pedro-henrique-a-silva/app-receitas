@@ -1,14 +1,8 @@
-.recipeVideo {
-  display: flex;
-  justify-content: center;
+.ingredientChecked {
+  text-decoration: line-through solid black;
 }
 
-.recipeVideo iframe {
-  height: 400px;
-  width: 80%;
-}
-
-.startRecipeBtn {
+.finishRecipeBtn {
   background-color: yellow;
   border: 1px solid brown;
   bottom: 0;

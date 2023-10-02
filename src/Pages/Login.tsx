@@ -41,7 +41,7 @@ function Login() {
       onSubmit={ onSubmit }
     >
       <label htmlFor="email">
-        e-mail
+        Email
         <input
           data-testid="email-input"
           type="text"
@@ -56,7 +56,7 @@ function Login() {
         Senha
         <input
           data-testid="password-input"
-          type="text"
+          type="password"
           id="password"
           name="password"
           value={ loginUser.password }
