@@ -111,11 +111,9 @@ describe('Testa a Tela de login', () => {
   test('Verifica rota Done Recipes', async () => {
     renderWithRouterAndContext(<App />, { route: '/done-recipes' });
 
-    const pageTitle = screen.getByTestId(pageTitleEl);
-    const profileBtn = screen.getByTestId(profileTopButtonEl);
+    const allButton = screen.getByTestId('filter-by-all-btn');
 
-    expect(pageTitle).toBeInTheDocument();
-    expect(profileBtn).toBeInTheDocument();
+    expect(allButton).toBeInTheDocument();
     // expect(screen.getByTestId('searchTopButtonEl')).not.toBeInTheDocument();
   });
 
