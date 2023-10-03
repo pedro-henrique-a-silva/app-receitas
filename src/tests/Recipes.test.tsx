@@ -5,11 +5,11 @@ import { vi } from 'vitest';
 import renderWithRouterAndContext from '../utils/render';
 import App from '../App';
 
-// import categorysMeal from './mocks/categorysMeal';
+// import categorysMeal from './mocks/mealCategories.js';
 // import categorysDrink from './mocks/categorysDrink';
 
-// import allMeals from './mocks/allMeals';
-// import allDrinks from './mocks/allDrinks';
+// import * as allMeals from './mocks/meals.js';
+// import allDrinks from './mocks/drinks.js';
 // import mealFiltered from './mocks/mealFiltered';
 
 const RECIPE_CARD_01_TESTID = '0-recipe-card';
@@ -33,11 +33,11 @@ const RECIPE_CATEGORY_TESTID = 'recipe-category';
 const SHARE_BTN_TESTID = 'share-btn';
 const FAVORITE_BTN_TESTID = 'favorite-btn';
 
+afterEach(() => vi.restoreAllMocks());
 describe('Testando o Componente Recipes', () => {
-  afterEach(() => vi.restoreAllMocks());
   test('Testa se o componente renderiza corretamente', async () => {
     renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const pageTitle = screen.getByTestId('page-title');
     const profileBtn = screen.getByTestId('profile-top-btn');
@@ -51,10 +51,11 @@ describe('Testando o Componente Recipes', () => {
     // vi.spyOn(global, 'fetch').mockResolvedValue({
     //   json: async () => allMeals,
     // } as Response);
+    // console.log(allMeals);
 
     renderWithRouterAndContext(<App />, { route: '/meals' });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const recipeCards1 = await screen.findByTestId(RECIPE_CARD_01_TESTID);
     const recipeCards2 = await screen.findByTestId(RECIPE_CARD_02_TESTID);
@@ -95,7 +96,7 @@ describe('Testando o Componente Recipes', () => {
     //   } as Response);
 
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const recipeCardBefore1 = await screen.findByTestId(RECIPE_CARD_NAME_01_TESTID);
     const categoryBeef = await screen.findByTestId('Beef-category-filter');
@@ -105,7 +106,7 @@ describe('Testando o Componente Recipes', () => {
       await user.click(categoryBeef);
     });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
     const recipeCardAfter1 = await screen.findByTestId(RECIPE_CARD_NAME_01_TESTID);
     expect(recipeCardAfter1.textContent).toBe('Beef and Mustard Pie');
     // await new Promise((resolve) => { setTimeout(resolve, 1000); });
@@ -115,7 +116,7 @@ describe('Testando o Componente Recipes', () => {
       await user.click(clearFilter);
     });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     // await new Promise((resolve) => { setTimeout(resolve, 1000); });
     expect(recipeCardBefore1.textContent).toBe('Corba');
@@ -127,14 +128,14 @@ describe('Testando o Componente Recipes', () => {
     // } as Response);
 
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     await act(async () => {
       const recipeCard = await screen.findByTestId(RECIPE_CARD_01_TESTID);
       await user.click(recipeCard);
     });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const recipePhoto = await screen.findByTestId(RECIPE_PHOTO_TESTID);
     const recipeTitle = await screen.findByTestId(RECIPE_TITLE_TESTID);
@@ -155,14 +156,14 @@ describe('Testando o Componente Recipes', () => {
     // } as Response);
 
     const { user } = renderWithRouterAndContext(<App />, { route: '/drinks' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     await act(async () => {
       const recipeCard = await screen.findByTestId(RECIPE_CARD_01_TESTID);
       await user.click(recipeCard);
     });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const recipePhoto = await screen.findByTestId(RECIPE_PHOTO_TESTID);
     const recipeTitle = await screen.findByTestId(RECIPE_TITLE_TESTID);

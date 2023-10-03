@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { act, screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { vi } from 'vitest';
 import App from '../App';
 import renderWithRouterAndContext from '../utils/render';
@@ -15,19 +15,19 @@ const FINISH_BTN_TESTID = 'finish-recipe-btn';
 const ALCOHOOL_OPTIONAL = 'Optional alcohol';
 const INGREDIENTS_STEP_TESTID = 'ingredient-step';
 
-describe('Testa tela de detalhes de receita', () => {
-  beforeEach(() => {
-    vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2023-09-27T19:33:56.687Z');
-  });
+beforeEach(() => {
+  vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2023-09-27T19:33:56.687Z');
+});
 
-  afterEach(() => {
-    localStorage.clear();
-    vi.restoreAllMocks();
-  });
+afterEach(() => {
+  localStorage.clear();
+  vi.restoreAllMocks();
+});
+describe('Testa tela de detalhes de receita', () => {
   test('Testando tela de Receita em progresso', async () => {
     renderWithRouterAndContext(<App />, { route: ROTA_COMIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const recipePhoto = await screen.findByTestId(RECIPE_PHOTO_TESTID);
     const recipeTitle = await screen.findByTestId(RECIPE_TITLE_TESTID);
@@ -84,29 +84,34 @@ describe('Testa tela de detalhes de receita', () => {
 
     const { user } = renderWithRouterAndContext(<App />, { route: ROTA_COMIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const shareBtn = await screen.findByTestId(SHARE_BTN_TESTID);
     const favoriteBtn = await screen.findByTestId(FAVORITE_BTN_TESTID);
     const ingredients1 = await screen.findByTestId(`0-${INGREDIENTS_STEP_TESTID}`);
-
-    await user.click(ingredients1);
+    await act(async () => {
+      await user.click(ingredients1);
+    });
 
     expect(window.getComputedStyle(ingredients1).textDecoration).toBe('line-through solid black');
-
-    await user.click(ingredients1);
+    await act(async () => {
+      await user.click(ingredients1);
+    });
 
     expect(window.getComputedStyle(ingredients1).textDecoration).toBe('');
-
-    await user.click(shareBtn);
+    await act(async () => {
+      await user.click(shareBtn);
+    });
 
     expect(screen.getByText('Link copied!')).toBeInTheDocument();
-
-    await user.click(favoriteBtn);
+    await act(async () => {
+      await user.click(favoriteBtn);
+    });
     const favoritesFromStorage1 = JSON.parse(localStorage.getItem('favoriteRecipes') as string);
     expect(favoritesFromStorage1).toEqual(favoriteRecipes);
-
-    await user.click(favoriteBtn);
+    await act(async () => {
+      await user.click(favoriteBtn);
+    });
     const favoritesFromStorage2 = JSON.parse(localStorage.getItem('favoriteRecipes') as string);
     expect(favoritesFromStorage2).toEqual([]);
   });
@@ -114,7 +119,7 @@ describe('Testa tela de detalhes de receita', () => {
   test('Testando se renderiza os drinks corretamentes', async () => {
     renderWithRouterAndContext(<App />, { route: ROTA_BEBIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const recipePhoto = await screen.findByTestId(RECIPE_PHOTO_TESTID);
     const recipeTitle = await screen.findByTestId(RECIPE_TITLE_TESTID);
@@ -158,20 +163,23 @@ describe('Testa tela de detalhes de receita', () => {
 
     const { user } = renderWithRouterAndContext(<App />, { route: ROTA_BEBIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const shareBtn = await screen.findByTestId(SHARE_BTN_TESTID);
     const favoriteBtn = await screen.findByTestId(FAVORITE_BTN_TESTID);
-
-    await user.click(shareBtn);
+    await act(async () => {
+      await user.click(shareBtn);
+    });
 
     expect(screen.getByText('Link copied!')).toBeInTheDocument();
-
-    await user.click(favoriteBtn);
+    await act(async () => {
+      await user.click(favoriteBtn);
+    });
     const favoritesFromStorage1 = JSON.parse(localStorage.getItem('favoriteRecipes') as string);
     expect(favoritesFromStorage1).toEqual(favoriteRecipeDrinks);
-
-    await user.click(favoriteBtn);
+    await act(async () => {
+      await user.click(favoriteBtn);
+    });
     const favoritesFromStorage2 = JSON.parse(localStorage.getItem('favoriteRecipes') as string);
     expect(favoritesFromStorage2).toEqual([]);
   });
@@ -191,18 +199,20 @@ describe('Testa tela de detalhes de receita', () => {
 
     const { user } = renderWithRouterAndContext(<App />, { route: ROTA_BEBIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const finishBtn = await screen.findByTestId(FINISH_BTN_TESTID);
 
-    const ingredients1 = await screen.findByTestId(`0-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients1);
-    const ingredients2 = await screen.findByTestId(`1-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients2);
-    const ingredients3 = await screen.findByTestId(`2-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients3);
+    await act(async () => {
+      const ingredients1 = await screen.findByTestId(`0-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients1);
+      const ingredients2 = await screen.findByTestId(`1-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients2);
+      const ingredients3 = await screen.findByTestId(`2-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients3);
 
-    await user.click(finishBtn);
+      await user.click(finishBtn);
+    });
 
     const doneRecipes = JSON.parse(localStorage.getItem('doneRecipes') as string);
     expect(doneRecipes[0]).toEqual(expectedDoneRecipes);
@@ -227,27 +237,29 @@ describe('Testa tela de detalhes de receita', () => {
 
     const { user } = renderWithRouterAndContext(<App />, { route: ROTA_COMIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const finishBtn = await screen.findByTestId(FINISH_BTN_TESTID);
 
-    const ingredients1 = await screen.findByTestId(`0-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients1);
-    const ingredients2 = await screen.findByTestId(`1-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients2);
-    const ingredients3 = await screen.findByTestId(`2-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients3);
-    const ingredients4 = await screen.findByTestId(`3-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients4);
-    const ingredients5 = await screen.findByTestId(`4-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients5);
-    const ingredients6 = await screen.findByTestId(`5-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients6);
-    const ingredients7 = await screen.findByTestId(`6-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients7);
-    const ingredients8 = await screen.findByTestId(`7-${INGREDIENTS_STEP_TESTID}`);
-    await user.click(ingredients8);
-    await user.click(finishBtn);
+    await act(async () => {
+      const ingredients1 = await screen.findByTestId(`0-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients1);
+      const ingredients2 = await screen.findByTestId(`1-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients2);
+      const ingredients3 = await screen.findByTestId(`2-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients3);
+      const ingredients4 = await screen.findByTestId(`3-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients4);
+      const ingredients5 = await screen.findByTestId(`4-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients5);
+      const ingredients6 = await screen.findByTestId(`5-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients6);
+      const ingredients7 = await screen.findByTestId(`6-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients7);
+      const ingredients8 = await screen.findByTestId(`7-${INGREDIENTS_STEP_TESTID}`);
+      await user.click(ingredients8);
+      await user.click(finishBtn);
+    });
 
     const doneRecipes = JSON.parse(localStorage.getItem('doneRecipes') as string);
     expect(doneRecipes[0]).toEqual(expectedDoneRecipes);

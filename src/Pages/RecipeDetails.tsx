@@ -99,8 +99,6 @@ function RecipeDetails(props: RecipeDetailsProps) {
 
   if (Object.entries(recipeDetails).length === 0) return (<div>Loading...</div>);
 
-  console.log(recipeDetails);
-
   return (
     <>
       {(isVisible) && <Message toggleIsVisible={ toggleIsVisible } />}

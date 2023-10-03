@@ -12,15 +12,15 @@ const SHARE_BTN_TESTID = 'share-btn';
 const FAVORITE_BTN_TESTID = 'favorite-btn';
 const START_RECIPE_BTN_TESTID = 'start-recipe-btn';
 
-describe('Testa tela de detalhes de receita', () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
+afterEach(() => {
+  localStorage.clear();
+});
 
+describe('Testa tela de detalhes de receita', () => {
   test('Testando tela de detalhes de comida renderiza as informações corretas', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: ROTA_COMIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const recipePhoto = await screen.findByTestId(RECIPE_PHOTO_TESTID);
     const recipeTitle = await screen.findByTestId(RECIPE_TITLE_TESTID);
@@ -85,7 +85,7 @@ describe('Testa tela de detalhes de receita', () => {
 
     const { user } = renderWithRouterAndContext(<App />, { route: ROTA_COMIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const shareBtn = await screen.findByTestId(SHARE_BTN_TESTID);
     const favoriteBtn = await screen.findByTestId(FAVORITE_BTN_TESTID);
@@ -109,7 +109,7 @@ describe('Testa tela de detalhes de receita', () => {
   test('Testando se renderiza os drinks corretamentes', async () => {
     renderWithRouterAndContext(<App />, { route: ROTA_BEBIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const recipePhoto = await screen.findByTestId(RECIPE_PHOTO_TESTID);
     const recipeTitle = await screen.findByTestId(RECIPE_TITLE_TESTID);
@@ -156,7 +156,7 @@ describe('Testa tela de detalhes de receita', () => {
 
     const { user } = renderWithRouterAndContext(<App />, { route: ROTA_BEBIDA });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/loading.../i));
 
     const shareBtn = await screen.findByTestId(SHARE_BTN_TESTID);
     const favoriteBtn = await screen.findByTestId(FAVORITE_BTN_TESTID);

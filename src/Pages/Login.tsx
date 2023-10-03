@@ -1,10 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import RecipesContext from '../context/contextRecipes';
+import { LoginType } from '../types';
+
+const LOGIN_INITIAL_STATE = {
+  email: '',
+  password: '',
+};
 
 function Login() {
-  const { loginUser,
-    setLoginUser } = useContext(RecipesContext);
+  const [loginUser, setLoginUser] = useState<LoginType>(LOGIN_INITIAL_STATE);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
