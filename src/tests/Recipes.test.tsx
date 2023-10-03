@@ -25,6 +25,8 @@ const RECIPE_CARD_10_TESTID = '9-recipe-card';
 const RECIPE_CARD_11_TESTID = '10-recipe-card';
 const RECIPE_CARD_12_TESTID = '11-recipe-card';
 
+const RECIPE_CARD_NAME_01_TESTID = '0-card-name';
+
 const RECIPE_PHOTO_TESTID = 'recipe-photo';
 const RECIPE_TITLE_TESTID = 'recipe-title';
 const RECIPE_CATEGORY_TESTID = 'recipe-category';
@@ -95,7 +97,7 @@ describe('Testando o Componente Recipes', () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
     await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
 
-    const recipeCardBefore1 = await screen.findByTestId('0-card-name');
+    const recipeCardBefore1 = await screen.findByTestId(RECIPE_CARD_NAME_01_TESTID);
     const categoryBeef = await screen.findByTestId('Beef-category-filter');
     expect(recipeCardBefore1.textContent).toBe('Corba');
 
@@ -104,7 +106,7 @@ describe('Testando o Componente Recipes', () => {
     });
 
     await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
-    const recipeCardAfter1 = await screen.findByTestId('0-card-name');
+    const recipeCardAfter1 = await screen.findByTestId(RECIPE_CARD_NAME_01_TESTID);
     expect(recipeCardAfter1.textContent).toBe('Beef and Mustard Pie');
     // await new Promise((resolve) => { setTimeout(resolve, 1000); });
 

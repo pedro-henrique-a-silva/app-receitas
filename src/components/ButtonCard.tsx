@@ -7,9 +7,6 @@ function ButtonCard({ onCategorySelected, categories }: ButtonCardProps) {
   const handleClearFilter = () => {
     onCategorySelected('');
   };
-  console.log('renderizando button card');
-
-  console.log(categories);
 
   return (
     <div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import RecipesContext from './contextRecipes';
-import { LoginType } from '../types';
+import { LoginType, Recipe } from '../types';
 
 type RecipesProviderProps = {
   children: React.ReactNode;
@@ -13,9 +13,16 @@ const LOGIN_INITIAL_STATE = {
 
 function RecipesProvider({ children }: RecipesProviderProps) {
   const [loginUser, setLoginUser] = useState<LoginType>(LOGIN_INITIAL_STATE);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+
+  const updateRecipes = (recipesData: any[]) => {
+    setRecipes((prev) => recipesData || prev);
+  };
 
   const context = {
     loginUser,
+    recipes,
+    updateRecipes,
     setLoginUser,
   };
 
