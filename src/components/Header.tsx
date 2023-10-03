@@ -1,17 +1,20 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import profileIcon from '../images/profileIcon.svg';
 import searchIcon from '../images/searchIcon.svg';
 import SearchBar from './SearchBar';
+import RecipesContext from '../context/contextRecipes';
 
 type HeaderProp = {
   title: string;
 };
 
 function Header(props: HeaderProp) {
+  const [toggleSearchBar, setToggleSearchBar] = useState(false);
+
   const { title } = props;
 
-  const [toggleSearchBar, setToggleSearchBar] = useState(false);
+  const { updateRecipes } = useContext(RecipesContext);
 
   const rotasSemHeader = ['profile', 'done recipes', 'favorite recipes'];
 
@@ -43,7 +46,8 @@ function Header(props: HeaderProp) {
           </NavLink>
         </div>
       </header>
-      {toggleSearchBar && <SearchBar />}
+      {(toggleSearchBar)
+      && <SearchBar updateRecipes={ updateRecipes! } />}
       <div>
         <h1 data-testid="page-title">{title}</h1>
       </div>

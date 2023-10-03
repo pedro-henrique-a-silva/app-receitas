@@ -4,10 +4,16 @@ import { MEALS_API_BASE, DRINKS_API_BASE, fetchApi } from '../utils/fetchAPi';
 
 const FIRST_LETTER_SEARCH_TYPE = 'First letter';
 
-function SearchBar() {
+type SearchBarProps = {
+  updateRecipes: (recipesData: any[]) => void;
+};
+
+function SearchBar(props: SearchBarProps) {
   const [searchType, setSearchType] = useState('Ingredient');
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  // const [searchResults, setSearchResults] = useState([]);
+
+  const { updateRecipes } = props;
 
   const handleSearchTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchType(event.target.value);
@@ -28,16 +34,16 @@ function SearchBar() {
 
     const apiEndpoint = buildApiEndpoint();
 
-    if (apiEndpoint) {
+    try {
       const data = await fetchData(apiEndpoint);
-      setSearchResults(data);
+      updateRecipes(data);
 
       if (data.length === 1) {
         const recipeId = data[0].idMeal || data[0].idDrink;
         redirectToRecipeDetails(recipeId);
       }
-    } else {
-      // Handle invalid searchType
+    } catch (error) {
+      alert('Sorry, we haven\'t found any recipes for these filters.');
     }
   }
 
@@ -77,12 +83,7 @@ function SearchBar() {
   }
 
   async function fetchData(apiEndpoint: string): Promise<any[]> {
-    try {
-      return await fetchApi(apiEndpoint);
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
+    return fetchApi(apiEndpoint);
   }
 
   function redirectToRecipeDetails(recipeId: string): void {
@@ -138,7 +139,7 @@ function SearchBar() {
       <button data-testid="exec-search-btn" onClick={ handleSearch }>
         Search
       </button>
-      <div>
+      {/* <div>
         <h2>Search Results</h2>
         <div>
           {searchResults.slice(0, 12).map((recipe, index) => (
@@ -154,7 +155,7 @@ function SearchBar() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
