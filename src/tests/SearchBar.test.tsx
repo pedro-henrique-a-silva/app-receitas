@@ -1,22 +1,12 @@
 import React from 'react';
 
 import { act, screen, waitForElementToBeRemoved } from '@testing-library/react';
-import { vi } from 'vitest';
 import renderWithRouterAndContext from '../utils/render';
 import App from '../App';
 
 const RECIPE_CARD_01_TESTID = '0-card-name';
 const RECIPE_CARD_02_TESTID = '1-card-name';
 const RECIPE_CARD_03_TESTID = '2-card-name';
-const RECIPE_CARD_04_TESTID = '3-card-name';
-const RECIPE_CARD_05_TESTID = '4-card-name';
-const RECIPE_CARD_06_TESTID = '5-card-name';
-const RECIPE_CARD_07_TESTID = '6-card-name';
-const RECIPE_CARD_08_TESTID = '7-card-name';
-const RECIPE_CARD_09_TESTID = '8-card-name';
-const RECIPE_CARD_10_TESTID = '9-card-name';
-const RECIPE_CARD_11_TESTID = '10-card-name';
-const RECIPE_CARD_12_TESTID = '11-card-name';
 
 const SEARCH_INPUT_TESTID = 'search-input';
 const SEARCH_BTN = 'search-top-btn';
@@ -335,5 +325,36 @@ describe('Testando search bar', () => {
 
     expect(recipeCard01.textContent).toBe('GG');
     expect(recipeCard02.textContent).toBe('A1');
+  });
+
+  test('Testa falha no filtro', async () => {
+    const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+
+    const searchBtn = screen.getByTestId(SEARCH_BTN);
+
+    expect(searchBtn).toBeInTheDocument();
+
+    await act(async () => {
+      await user.click(searchBtn);
+    });
+
+    const searchInput = screen.getByTestId(SEARCH_INPUT_TESTID);
+    const nameSearchRadio = screen.getByTestId(NAME_SEARCH_RADIO);
+    const searchSubmitBtn = screen.getByTestId(EXEC_SEARCH_BTN);
+
+    await act(async () => {
+      await user.type(searchInput, 'xablau');
+      await user.click(nameSearchRadio);
+      await user.click(searchSubmitBtn);
+    });
+
+    await new Promise((resolve) => { setTimeout(resolve, 1000); });
+
+    const recipeCard01 = screen.getByTestId(RECIPE_CARD_01_TESTID);
+    const recipeCard02 = screen.getByTestId(RECIPE_CARD_02_TESTID);
+
+    expect(recipeCard01.textContent).toBe('Corba');
+    expect(recipeCard02.textContent).toBe('Sushi');
   });
 });
