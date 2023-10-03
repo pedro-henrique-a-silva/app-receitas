@@ -18,7 +18,7 @@ const EXEC_SEARCH_BTN = 'exec-search-btn';
 describe('Testando search bar', () => {
   test('Deve renderizar o componente SearchBar corretamente', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -40,7 +40,7 @@ describe('Testando search bar', () => {
 
   test('Testa pesquisa de comida por ingrediente', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -73,7 +73,7 @@ describe('Testando search bar', () => {
 
   test('Testa pesquisa de comida por nome', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -106,7 +106,7 @@ describe('Testando search bar', () => {
 
   test('Testa pesquisa de comida pela primeira letra', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -139,7 +139,7 @@ describe('Testando search bar', () => {
 
   test('Testa pesquisa de bebida por ingrediente', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/drinks' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -172,7 +172,7 @@ describe('Testando search bar', () => {
 
   test('Testa pesquisa de bebida por nome', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/drinks' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -205,7 +205,7 @@ describe('Testando search bar', () => {
 
   test('Testa pesquisa de bebida pela primeira letra', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/drinks' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -238,7 +238,7 @@ describe('Testando search bar', () => {
 
   test('Testa se redireciona para rota de detalhes se pesquisa de comida retorna uma receita', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -268,7 +268,7 @@ describe('Testando search bar', () => {
 
   test('Testa se redireciona para rota de detalhes se pesquisa de bebida retorna uma receita', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/drinks' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -298,7 +298,7 @@ describe('Testando search bar', () => {
 
   test('Testa validação de primeira letra na pesquisa de bebida pela primeira letra', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/drinks' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 
@@ -329,7 +329,7 @@ describe('Testando search bar', () => {
 
   test('Testa falha no filtro', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const searchBtn = screen.getByTestId(SEARCH_BTN);
 

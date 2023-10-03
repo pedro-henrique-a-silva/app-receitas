@@ -3,11 +3,16 @@ import { Link } from 'react-router-dom';
 import shareIcon from '../images/shareIcon.svg';
 import { DoneRecipeType } from '../types';
 import Header from '../components/Header';
+import Message from '../components/Message';
 
 function DoneRecipes() {
   const [recipesDone, setRecipesDone] = useState<DoneRecipeType[]>([]);
   const [filter, setFilter] = useState('all');
-  const [share, setShare] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const toggleIsVisible = () => {
+    setIsVisible(!isVisible);
+  };
 
   useEffect(() => {
     const doneRecipes = JSON.parse(localStorage.getItem('doneRecipes') || '[]');
@@ -21,7 +26,7 @@ function DoneRecipes() {
   const copyText = async (recipe: DoneRecipeType) => {
     const recipeUrl = `${window.location.origin}/${recipe.type}s/${recipe.id}`;
     await navigator.clipboard.writeText(recipeUrl);
-    setShare(true);
+    toggleIsVisible();
   };
 
   const renderFilterButtons = () => {
@@ -62,6 +67,7 @@ function DoneRecipes() {
 
   return (
     <>
+      {(isVisible) && <Message toggleIsVisible={ toggleIsVisible } />}
       <Header title="Done Recipes" />
 
       <div>
@@ -101,7 +107,7 @@ function DoneRecipes() {
                     alt="Share icon"
                   />
                 </button>
-                {share && <h4>Link copied!</h4>}
+
               </li>
             ))}
         </ul>

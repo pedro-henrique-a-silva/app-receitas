@@ -12,9 +12,9 @@ const expectLocalStorageData = [
   { id: '53065', type: 'meal', nationality: 'Japanese', category: 'Seafood', alcoholicOrNot: '', name: 'Sushi', image: 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg' },
   { id: '53060', type: 'meal', nationality: 'Croatian', category: 'Side', alcoholicOrNot: '', name: 'Burek', image: 'https://www.themealdb.com/images/media/meals/tkxquw1628771028.jpg' },
 ];
+afterEach(() => localStorage.clear());
 
 describe('Testa tela de receitas favoritas', () => {
-  afterEach(() => localStorage.clear());
   test('Verifica se a tela de receitas favoritas é renderizada corretamente', async () => {
     localStorage.setItem('favoriteRecipes', JSON.stringify(expectLocalStorageData));
     renderWithRouterAndContext(<App />, { route: ROTA_FAVORITOS });

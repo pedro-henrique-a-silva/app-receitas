@@ -23,7 +23,7 @@ describe('Testa se Header esta funcionando corretamente', () => {
   test('Verifica se o header está sendo renderizado corretamente.', async () => {
     const { user } = renderWithRouterAndContext(<App />, { route: '/meals' });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const pageTitle = screen.getByTestId(pageTitleEl);
     const profileBtn = screen.getByTestId(profileTopButtonEl);
@@ -62,7 +62,7 @@ describe('Testa se Header esta funcionando corretamente', () => {
   test('Verifica rota de Drinks', async () => {
     renderWithRouterAndContext(<App />, { route: '/drinks' });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i));
 
     const pageTitle = screen.getByTestId(pageTitleEl);
     const profileBtn = screen.getByTestId(profileTopButtonEl);

@@ -49,16 +49,13 @@ const doneRecipes = [
     tags: [],
   },
 ];
+afterEach(() => {
+  localStorage.clear();
+});
 
 describe('Componente DoneRecipes', () => {
-  beforeEach(() => {
-    localStorage.setItem('doneRecipes', JSON.stringify(doneRecipes));
-  });
-  afterEach(() => {
-    localStorage.clear();
-  });
-
   test('Verifica se renderiza receitas concluidas', () => {
+    localStorage.setItem('doneRecipes', JSON.stringify(doneRecipes));
     renderWithRouterAndContext(<App />, { route: ROTA_DONE_RECIPES });
     // await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
 
@@ -76,6 +73,7 @@ describe('Componente DoneRecipes', () => {
   });
 
   test('Verifica filtro de receitas concluidas', async () => {
+    localStorage.setItem('doneRecipes', JSON.stringify(doneRecipes));
     const { container, user } = renderWithRouterAndContext(<App />, { route: ROTA_DONE_RECIPES });
     // await waitForElementToBeRemoved(() => screen.getByText(/Loading.../i), { timeout: 10000 });
 
@@ -105,13 +103,15 @@ describe('Componente DoneRecipes', () => {
     expect(doneReceipes03.length).toBe(3);
   });
   test('Testando compartilhamento de receita', async () => {
+    localStorage.setItem('doneRecipes', JSON.stringify(doneRecipes));
     const { user } = renderWithRouterAndContext(<App />, { route: ROTA_DONE_RECIPES });
 
     // await waitForElementToBeRemoved(() => screen.getByText(/loading.../i), { timeout: 10000 });
 
     const shareBtn = await screen.findByTestId(SHARE_BTN_TESTID);
-
-    await user.click(shareBtn);
+    await act(async () => {
+      await user.click(shareBtn);
+    });
 
     expect(screen.getByText('Link copied!')).toBeInTheDocument();
   });
