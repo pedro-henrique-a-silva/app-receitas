@@ -11,7 +11,6 @@ ReactDOM
       <RecipesProvider>
         <App />
       </RecipesProvider>
-      ,
     </BrowserRouter>,
 
   );
